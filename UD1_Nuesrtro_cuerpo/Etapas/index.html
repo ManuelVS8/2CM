@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <meta name="google" content="notranslate">
-    <title>El esqueleto</title>
+    <title>Etapas de la vida</title>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/icono.ico">
     <style>
         * { box-sizing: border-box; margin:0; padding:0; }
@@ -19,12 +19,8 @@
             --bg-grad-2:#0d2340;
             --white:#ffffff;
             --green:#2ecc71;
-            --green-700:#219150;
             --red:#e74c3c;
             --panel:#E8EAFF;
-            --pastel-blue:#e3f2fd;
-            --pastel-orange:#ffe0b2;
-            --pastel-green:#e1f5ea;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -52,8 +48,6 @@
         .btn-blue { background:var(--blue-600); }
         .btn-blue:hover { filter:brightness(.9); }
         .btn-ghost { background:#e6f2ff; color:var(--blue-700); }
-        .btn-continue { background:var(--blue-600); display:none; }
-        .btn-continue.show { display:inline-flex; }
 
         .screen { display:none; animation:fadeIn .35s ease; flex-direction:column; flex:1; }
         .screen.active { display:flex; }
@@ -95,61 +89,61 @@
             80%{transform:translateX(5px);}
         }
 
-        /* Pantalla Juego 1: Señalar partes (casilla) */
-        .game1-wrapper { display:flex; flex-direction:column; align-items:center; gap:1rem; flex:1; padding:.2rem 0 1rem; }
+        /* Pantalla Juego 1: Grid de imágenes (etapas de la vida) */
+        .game1-wrapper { display:flex; flex-direction:column; align-items:center; gap:1.2rem; flex:1; padding:.2rem 0 1rem; }
         .word-display { display:flex; align-items:center; justify-content:center; gap:.8rem; }
-        #game1WordText { font-size:clamp(1.3rem,4vw,2rem); font-weight:900; color:var(--blue-dark); background:var(--panel);
-            padding:.55rem 1.5rem; border-radius:14px; box-shadow:0 3px 8px rgba(0,0,0,.08); min-width:170px; text-align:center; }
+        #game1WordText { font-size:clamp(1.1rem,3.2vw,1.6rem); font-weight:900; color:var(--blue-dark); background:var(--panel);
+            padding:.55rem 1.5rem; border-radius:14px; box-shadow:0 3px 8px rgba(0,0,0,.08); min-width:170px; max-width:640px; text-align:center; }
         .btn-play-word { width:46px; height:46px; border-radius:50%; background:var(--blue-600); border:2px solid #fff; color:#fff;
             cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(37,79,186,.35);
             transition:transform .15s, box-shadow .15s; flex-shrink:0; }
         .btn-play-word:hover { transform:scale(1.12); }
         .btn-play-word:active { transform:scale(.95); }
         .btn-play-word svg { width:18px; height:18px; margin-left:2px; pointer-events:none; }
-        .hotspot-image-wrapper { position:relative; width:100%; max-width:400px; aspect-ratio:936/1402; margin:0 auto;
-            border-radius:14px; overflow:hidden; background:#eef2f9; }
-        @media (min-width:900px) { .hotspot-image-wrapper { max-width:460px; } }
-        .hotspot-image-wrapper img { position:absolute; inset:0; width:100%; height:100%; object-fit:fill; user-select:none; -webkit-user-drag:none; }
-        .hotspots-container { position:absolute; inset:0; width:100%; height:100%; }
-        .hotspot { position:absolute; border:2px solid transparent; background:transparent; cursor:pointer; border-radius:8px;
-            transition:background-color .15s ease; }
-        .hotspot:hover { background:rgba(255,255,255,.15); }
-        .hotspot.shake { animation:shakeAnim .4s ease; }
+        .image-grid-large { display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; width:100%; max-width:640px; margin:0 auto; }
+        @media (min-width:700px) { .image-grid-large { grid-template-columns:repeat(4, 1fr); max-width:100%; } }
+        .image-cell-large { position:relative; aspect-ratio:3/4; border-radius:14px; overflow:hidden; cursor:pointer;
+            background-color:#eef2f9; border:3px solid transparent; box-shadow:0 4px 14px rgba(0,0,0,.12);
+            transition:transform .15s ease, box-shadow .2s ease; }
+        .image-cell-large:hover { transform:scale(1.02); box-shadow:0 8px 20px rgba(0,0,0,.2); }
+        .image-cell-large img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; }
+        .image-cell-large .cell-flash { position:absolute; inset:0; background-color:transparent; transition:background-color .15s ease; pointer-events:none; }
+        .image-cell-large.flash-correct .cell-flash { background-color:rgba(46,204,113,.55); }
+        .image-cell-large.flash-error .cell-flash { background-color:rgba(231,76,60,.55); }
+        .image-cell-large.shake { animation:shakeAnim .4s ease; }
 
-        /* Pantalla Juego 2: Clasificar en cajas */
-        .game2-layout { display:flex; flex-direction:column; flex:1; gap:.8rem; padding-bottom:.5rem; }
-        .bank-area { background:#fdfdfd; background-image:radial-gradient(#cbd5e1 1px, transparent 1px); background-size:15px 15px;
-            padding:10px; border-radius:12px; min-height:60px; display:flex; flex-wrap:wrap; justify-content:center; align-items:center;
-            gap:8px; border:2px dashed #b0bec5; }
-        .draggable-item { background:#ffffff; border:1px solid #e0e0e0; color:#455a64; padding:8px 14px; border-radius:25px;
-            cursor:pointer; font-weight:600; font-size:.9rem; box-shadow:0 3px 5px rgba(0,0,0,.05); transition:all .2s;
-            user-select:none; text-align:center; }
-        .draggable-item:hover { background:#f8f9fa; transform:translateY(-2px); border-color:var(--blue-700); }
-        .draggable-item.selected { background:var(--orange); color:white; border:none; transform:translateY(-2px) scale(1.05); }
-        .draggable-item.correct {
-            background:rgba(46,204,113,.35) !important; color:var(--green-700) !important; border:2px solid var(--green) !important;
-            box-shadow:0 4px 10px rgba(46,204,113,.25) !important;
+        /* Pantalla Juego 2: Ordenar fases */
+        .game2-wrapper { display:flex; flex-direction:column; align-items:center; gap:1.2rem; flex:1; padding:.5rem 0 1rem; }
+        .phases-container { width:100%; max-width:700px; }
+        .phase-card { background:#f8fff9; border:2px solid #b7e4c7; border-radius:12px; padding:1rem; margin-bottom:1rem;
+            display:flex; align-items:center; justify-content:space-between; transition:all .3s ease; cursor:move; }
+        .phase-card:hover { transform:translateY(-4px); box-shadow:0 8px 16px rgba(0,0,0,.08); }
+        .phase-text { flex:1; font-weight:700; font-size:clamp(.9rem,2vw,1.1rem); color:var(--blue-dark); text-align:left; }
+        .phase-controls { display:flex; gap:.4rem; flex-shrink:0; }
+        .phase-btn { width:40px; height:40px; border-radius:8px; background:var(--orange); border:none; color:white; font-weight:800;
+            cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s ease; }
+        .phase-btn:hover:not(:disabled) { background:var(--orange-700); transform:scale(1.1); }
+        .phase-btn:disabled { background:#ccc; cursor:not-allowed; opacity:.5; }
+        .check-btn { width:100%; max-width:300px; margin-top:1.5rem; }
+        .phase-card.correct .phase-text { color:var(--green); font-weight:900; }
+        .phase-card.incorrect .phase-text { color:var(--red); font-weight:900; }
+        .phase-card.shake { animation:shakeAnim .4s ease; }
+
+        /* Pantalla Juego 3: Emparejar */
+        .match-container { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:8px; margin:.5rem auto; align-content:flex-start; justify-content:center; align-self:center; width:100%; max-width:700px; }
+        .memory-card {
+            background-color:var(--blue-600); color:#fff; border:3px solid transparent; border-radius:10px;
+            padding:12px 10px; cursor:pointer; transition:background-color .2s ease, box-shadow .2s ease, transform .15s ease;
+            text-align:center; min-height:80px; width:100%; height:100%; box-sizing:border-box;
+            display:flex; align-items:center; justify-content:center;
+            font-size:clamp(.85rem,2.4vw,1.05rem); font-weight:700; user-select:none; word-break:break-word;
+            overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.08);
         }
-        .draggable-item.correct::before { content:'✓ '; font-weight:bold; }
-        .draggable-item.wrong {
-            background:rgba(231,76,60,.35) !important; color:#c0392b !important; border:2px solid var(--red) !important;
-            box-shadow:0 4px 10px rgba(231,76,60,.25) !important; animation:shakeAnim .5s ease-in-out;
-        }
-        .draggable-item.wrong::before { content:'✕ '; font-weight:bold; }
-        .sorting-area { flex:1; display:grid; grid-template-columns:repeat(3,1fr); gap:.8rem; }
-        @media (max-width:700px) { .sorting-area { grid-template-columns:1fr; } }
-        .sort-box { border-radius:10px; padding:8px; display:flex; flex-direction:column; min-height:120px; border:2px solid; }
-        .box-brazos { background:var(--pastel-blue); border-color:var(--blue-600); }
-        .box-piernas { background:var(--pastel-orange); border-color:var(--orange); }
-        .box-tronco { background:var(--pastel-green); border-color:var(--green-700); }
-        .sort-box-header { font-weight:800; text-align:center; margin-bottom:6px; padding-bottom:4px;
-            border-bottom:2px solid rgba(0,0,0,.08); font-size:.95rem; display:flex; align-items:center; justify-content:center; gap:6px; }
-        .box-brazos .sort-box-header { color:var(--blue-700); }
-        .box-piernas .sort-box-header { color:var(--orange-700); }
-        .box-tronco .sort-box-header { color:var(--green-700); }
-        .sort-content { flex:1; display:flex; flex-wrap:wrap; gap:6px; justify-content:center; align-content:flex-start; min-height:40px; }
-        .sort-content .draggable-item { background:rgba(255,255,255,.95); font-size:.85rem; padding:6px 10px; }
-        .sort-box.disabled { pointer-events:none; }
+        .memory-card:hover:not(.selected):not(.matched):not(.flash-error) { transform:scale(1.02); box-shadow:0 4px 10px rgba(0,0,0,.18); }
+        .memory-card.selected { background-color:var(--orange); animation:cardPulse 1s ease-in-out infinite; }
+        @keyframes cardPulse { 0%,100%{ transform:scale(1.02); } 50%{ transform:scale(1.05); } }
+        .memory-card.matched { background-color:var(--green); cursor:default; animation:none; transform:none; box-shadow:0 3px 10px rgba(46,204,113,.35); }
+        .memory-card.flash-error { animation:shakeAnim .4s ease-in-out; background-color:var(--red) !important; }
 
         /* Pantalla Final */
         .results { display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; gap:1.2rem; padding:1rem; }
@@ -201,12 +195,12 @@
     <!-- ===== PANTALLA INICIO ===== -->
     <section class="screen active" id="startScreen">
         <header>
-            <h1 id="startTitle">El esqueleto</h1>
-            <div class="subtitle" id="startSubtitle">Identifica los principales huesos del cuerpo.</div>
+            <h1 id="startTitle">Etapas de la vida</h1>
+            <div class="subtitle" id="startSubtitle">Identifica las etapas del ser humano</div>
         </header>
         <div class="start-content">
             <div class="advice-box" id="startAdvice">
-                Nuestro <span class="highlight-keyword">esqueleto</span> está compuesto de <span class="highlight-keyword">huesos</span>, que sostienen nuestro cuerpo y protegen los órganos internos. Los huesos están unidos por las <span class="highlight-keyword">articulaciones</span>, que nos permiten movernos.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong>
+                Nuestro cuerpo cambia a través del tiempo, pasando por distintas etapas: <span class="highlight-keyword">infancia</span>, <span class="highlight-keyword">adolescencia</span>, <span class="highlight-keyword">edad adulta</span> y <span class="highlight-keyword">ancianidad</span> o <span class="highlight-keyword">vejez</span>.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong>
             </div>
             <button class="btn btn-primary" id="playBtn">Comenzar</button>
             <img class="start-image" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png" alt="Niños aprendiendo">
@@ -227,10 +221,10 @@
         </div>
     </section>
 
-    <!-- ===== PANTALLA JUEGO 1: SEÑALAR PARTES ===== -->
+    <!-- ===== PANTALLA JUEGO 1: GRID DE IMÁGENES ===== -->
     <section class="screen" id="game1Screen">
         <header>
-            <h1 id="game1Title">Señala los huesos</h1>
+            <h1 id="game1Title">Identifica las etapas de la vida</h1>
         </header>
         <div class="game-info">
             <div class="timer" id="timerDisplay">00:00.00</div>
@@ -238,54 +232,46 @@
         </div>
         <div class="game1-wrapper">
             <div class="word-display">
-                <span id="game1WordText">Cráneo</span>
+                <span id="game1WordText">Infancia</span>
                 <button class="btn-play-word" id="btnPlayWord" title="Escuchar">
                     <svg viewBox="0 0 24 24" fill="#fff"><polygon points="6,4 20,12 6,20"></polygon></svg>
                 </button>
             </div>
-            <div class="hotspot-image-wrapper" id="hotspotImageWrapper">
-                <img id="skeletonImg" src="https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO2/Nuestro%20cuerpo/Esqueleto.png" alt="Esqueleto humano para identificar huesos">
-                <div id="hotspotsContainer" class="hotspots-container"></div>
-            </div>
+            <div class="image-grid-large" id="imageGrid1"></div>
         </div>
     </section>
 
-    <!-- ===== PANTALLA JUEGO 2: CLASIFICAR EN CAJAS ===== -->
+    <!-- ===== PANTALLA JUEGO 2: ORDENAR FASES ===== -->
     <section class="screen" id="game2Screen">
         <header>
-            <h1 id="game2Title">Clasifica los siguientes huesos:</h1>
+            <h1 id="game2Title">Ordena las etapas de la vida</h1>
         </header>
         <div class="game-info">
             <div class="timer" id="timerDisplay2">00:00.00</div>
             <div class="progress-bar"><div class="progress-fill" id="progressFill2"></div></div>
         </div>
-        <div class="game2-layout">
-            <div class="bank-area" id="g2Bank"></div>
-            <div class="sorting-area">
-                <div class="sort-box box-brazos" data-type="brazos">
-                    <div class="sort-box-header">💪 <span id="boxBrazosTitle">Brazos</span></div>
-                    <div class="sort-content"></div>
-                </div>
-                <div class="sort-box box-piernas" data-type="piernas">
-                    <div class="sort-box-header">🦵 <span id="boxPiernasTitle">Piernas</span></div>
-                    <div class="sort-content"></div>
-                </div>
-                <div class="sort-box box-tronco" data-type="tronco">
-                    <div class="sort-box-header">🫁 <span id="boxTroncoTitle">Tronco</span></div>
-                    <div class="sort-content"></div>
-                </div>
-            </div>
-            <div style="text-align:center;">
-                <button class="btn btn-primary" id="checkBtnGame2">Comprobar</button>
-                <button class="btn btn-continue" id="continueBtnGame2">Continuar</button>
-            </div>
+        <div class="game2-wrapper">
+            <div class="phases-container" id="phasesContainer"></div>
+            <button class="btn btn-primary check-btn" id="checkPhasesBtn">Comprobar</button>
         </div>
+    </section>
+
+    <!-- ===== PANTALLA JUEGO 3: EMPAREJAR ===== -->
+    <section class="screen" id="game3Screen">
+        <header>
+            <h1 id="game3Title">Une cada etapa con su rango de edad</h1>
+        </header>
+        <div class="game-info">
+            <div class="timer" id="timerDisplay3">00:00.00</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill3"></div></div>
+        </div>
+        <div class="match-container" id="game3Container"></div>
     </section>
 
     <!-- ===== PANTALLA FINAL ===== -->
     <section class="screen" id="finalScreen">
         <header>
-            <h1 class="final-title" id="finalTitle">El esqueleto</h1>
+            <h1 class="final-title" id="finalTitle">Etapas de la vida</h1>
         </header>
         <div class="results">
             <div id="trophyDiv" class="trophy hidden">🏆</div>
@@ -317,64 +303,68 @@
 /* ====================================================
    CONFIGURACIÓN GLOBAL
 ===================================================== */
-const SHEET_NAME = "Esqueleto";
+const SHEET_NAME = "etapas";
 const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxUf-hXwjEkLUjzpOWBo0y88IcX_9wASGLiJfZSKR9494UsBQlrPn0Wd-D6VYnyXZSO/exec";
 
 /* ====================================================
-   DATOS DEL JUEGO 1 - HOTSPOT (coordenadas sobre imagen 936x1402)
+   DATOS DEL JUEGO 1 - GRID DE IMÁGENES (etapas de la vida)
 ===================================================== */
-const game1Data = {
+const stagesData = {
     es: [
-        { text:"Cráneo",            coords:[567,28,700,154] },
-        { text:"Costillas",         coords:[716,229,848,355] },
-        { text:"Columna vertebral", coords:[741,390,874,515] },
-        { text:"Pelvis",            coords:[740,560,872,686] },
-        { text:"Tibia",             coords:[672,994,805,1120] },
-        { text:"Peroné",            coords:[690,1170,822,1296] },
-        { text:"Fémur",             coords:[158,880,290,1006] },
-        { text:"Cúbito",            coords:[65,669,196,794] },
-        { text:"Radio",             coords:[34,489,166,614] },
-        { text:"Húmero",            coords:[60,331,192,458] }
+        { key:"infancia",     img:"https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO2/Nuestro%20cuerpo/Infancia.png",
+          texts:["Infancia","En esta etapa vamos al colegio","Se nos caen los dientes de leche"] },
+        { key:"adolescencia", img:"https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO2/Nuestro%20cuerpo/Adolescencia.png",
+          texts:["Adolescencia","Vamos al instituto","Etapa de cambios físicos: a los chicos les sale barba y a las chicas les crecen los pechos"] },
+        { key:"adulta",       img:"https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO2/Nuestro%20cuerpo/Adulto.png",
+          texts:["Edad adulta","Tenemos responsabilidades y podemos tener hijos","Termina el desarrollo y dejamos de crecer"] },
+        { key:"ancianidad",   img:"https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO2/Nuestro%20cuerpo/Ancianidad.png",
+          texts:["Ancianidad o vejez","Es la última etapa de la vida","Perdemos fuerza y agilidad"] }
     ],
     en: [
-        { text:"Skull",  coords:[567,28,700,154] },
-        { text:"Ribs",   coords:[716,229,848,355] },
-        { text:"Spine",  coords:[741,390,874,515] },
-        { text:"Pelvis", coords:[740,560,872,686] },
-        { text:"Tibia",  coords:[672,994,805,1120] },
-        { text:"Fibula", coords:[690,1170,822,1296] },
-        { text:"Femur",  coords:[158,880,290,1006] },
-        { text:"Ulna",   coords:[65,669,196,794] },
-        { text:"Radius", coords:[34,489,166,614] },
-        { text:"Humerus",coords:[60,331,192,458] }
+        { key:"infancia",     img:"https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO2/Nuestro%20cuerpo/Infancia.png",
+          texts:["Childhood","At this stage we go to school","We lose our baby teeth"] },
+        { key:"adolescencia", img:"https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO2/Nuestro%20cuerpo/Adolescencia.png",
+          texts:["Adolescence","We go to secondary school","A stage of physical changes: boys grow a beard and girls' breasts develop"] },
+        { key:"adulta",       img:"https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO2/Nuestro%20cuerpo/Adulto.png",
+          texts:["Adulthood","We have responsibilities and can have children","Development ends and we stop growing"] },
+        { key:"ancianidad",   img:"https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO2/Nuestro%20cuerpo/Ancianidad.png",
+          texts:["Old age","It is the last stage of life","We lose strength and agility"] }
     ]
 };
 
 /* ====================================================
-   DATOS DEL JUEGO 2 - CLASIFICAR EN CAJAS
+   DATOS DEL JUEGO 2 - FASES DE LA DIGESTIÓN
 ===================================================== */
 const game2Data = {
     es: [
-        { text:"Radio",             type:"brazos" },
-        { text:"Cúbito",            type:"brazos" },
-        { text:"Húmero",            type:"brazos" },
-        { text:"Fémur",             type:"piernas" },
-        { text:"Tibia",             type:"piernas" },
-        { text:"Peroné",            type:"piernas" },
-        { text:"Pelvis",            type:"tronco" },
-        { text:"Costillas",         type:"tronco" },
-        { text:"Columna vertebral", type:"tronco" }
+        "Infancia",
+        "Adolescencia",
+        "Edad adulta",
+        "Ancianidad o vejez"
     ],
     en: [
-        { text:"Radius",  type:"brazos" },
-        { text:"Ulna",    type:"brazos" },
-        { text:"Humerus", type:"brazos" },
-        { text:"Femur",   type:"piernas" },
-        { text:"Tibia",   type:"piernas" },
-        { text:"Fibula",  type:"piernas" },
-        { text:"Pelvis",  type:"tronco" },
-        { text:"Ribs",    type:"tronco" },
-        { text:"Spine",   type:"tronco" }
+        "Childhood",
+        "Adolescence",
+        "Adulthood",
+        "Old age"
+    ]
+};
+
+/* ====================================================
+   DATOS DEL JUEGO 3 - EMPAREJAR (rango de edad)
+===================================================== */
+const game3Data = {
+    es: [
+        { id:0, term:"Infancia",             def:"0 – 11 años" },
+        { id:1, term:"Adolescencia",         def:"12 – 18 años" },
+        { id:2, term:"Edad adulta",          def:"19 – 65 años" },
+        { id:3, term:"Ancianidad o vejez",   def:"Más de 65 años" }
+    ],
+    en: [
+        { id:0, term:"Childhood",    def:"0 – 11 years" },
+        { id:1, term:"Adolescence",  def:"12 – 18 years" },
+        { id:2, term:"Adulthood",    def:"19 – 65 years" },
+        { id:3, term:"Old age",      def:"Over 65 years" }
     ]
 };
 
@@ -383,17 +373,17 @@ const game2Data = {
 ===================================================== */
 const i18n = {
     es: {
-        startTitle: 'El esqueleto',
-        startSubtitle: 'Identifica los principales huesos del cuerpo.',
-        startAdvice: 'Nuestro <span class="highlight-keyword">esqueleto</span> está compuesto de <span class="highlight-keyword">huesos</span>, que sostienen nuestro cuerpo y protegen los órganos internos. Los huesos están unidos por las <span class="highlight-keyword">articulaciones</span>, que nos permiten movernos.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong>',
+        startTitle: 'Etapas de la vida',
+        startSubtitle: 'Identifica las etapas del ser humano',
+        startAdvice: 'Nuestro cuerpo cambia a través del tiempo, pasando por distintas etapas: <span class="highlight-keyword">infancia</span>, <span class="highlight-keyword">adolescencia</span>, <span class="highlight-keyword">edad adulta</span> y <span class="highlight-keyword">ancianidad</span> o <span class="highlight-keyword">vejez</span>.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong>',
         startBtn: 'Comenzar',
         hofTitle: 'Mejores puntuaciones',
         hofPos: 'Posición', hofName: 'Nombre', hofPoints: 'Puntos', hofTime: 'Tiempo',
-        game1Title: 'Señala los huesos',
-        game2Title: 'Clasifica los siguientes huesos:',
-        boxBrazos: 'Brazos', boxPiernas: 'Piernas', boxTronco: 'Tronco',
-        checkBtn: 'Comprobar', continueBtn: 'Continuar',
-        finalTitle: 'El esqueleto',
+        game1Title: 'Identifica las etapas de la vida',
+        game2Title: 'Ordena las etapas de la vida',
+        game3Title: 'Une cada etapa con su rango de edad',
+        checkBtn: 'Comprobar',
+        finalTitle: 'Etapas de la vida',
         scoreLabel: 'Puntuación:',
         timeLabel: 'Tiempo:',
         backBtn: 'Volver al menú',
@@ -410,17 +400,17 @@ const i18n = {
         msg0: 'Vaya desastre... ¿Seguro que has estudiado?'
     },
     en: {
-        startTitle: 'The skeleton',
-        startSubtitle: 'Identify the main bones of the body.',
-        startAdvice: 'Our <span class="highlight-keyword">skeleton</span> is made up of <span class="highlight-keyword">bones</span>, which support our body and protect our internal organs. Bones are joined together by <span class="highlight-keyword">joints</span>, which allow us to move.<br><strong style="display:block;margin-top:.5rem;text-align:center;">Good luck!</strong>',
+        startTitle: 'Stages of life',
+        startSubtitle: 'Identify the stages of human life',
+        startAdvice: 'Our body changes over time, going through different stages: <span class="highlight-keyword">childhood</span>, <span class="highlight-keyword">adolescence</span>, <span class="highlight-keyword">adulthood</span> and <span class="highlight-keyword">old age</span>.<br><strong style="display:block;margin-top:.5rem;text-align:center;">Good luck!</strong>',
         startBtn: 'Start',
         hofTitle: 'Best scores',
         hofPos: 'Position', hofName: 'Name', hofPoints: 'Points', hofTime: 'Time',
-        game1Title: 'Point to the bones',
-        game2Title: 'Classify the following bones:',
-        boxBrazos: 'Arms', boxPiernas: 'Legs', boxTronco: 'Trunk',
-        checkBtn: 'Check', continueBtn: 'Continue',
-        finalTitle: 'The skeleton',
+        game1Title: 'Identify the stages of life',
+        game2Title: 'Order the stages of life',
+        game3Title: 'Match each stage with its age range',
+        checkBtn: 'Check',
+        finalTitle: 'Stages of life',
         scoreLabel: 'Score:',
         timeLabel: 'Time:',
         backBtn: 'Back to menu',
@@ -445,21 +435,27 @@ let currentLang = 'es';
 let isMuted = false;
 let startTime = 0;
 let timerInterval = null;
-let totalErrors = 0; // Cada error resta 100/19 puntos
+let totalErrors = 0; // Cada error resta 100/10 puntos
 let currentScreen = 'start';
 let isHofLoading = false;
 let lastElapsedSeconds = 0;
 
-const TOTAL_ITEMS = 19; // 10 (juego1) + 9 (juego2)
+const TOTAL_ITEMS = 20; // 12 (juego1: 4 imágenes x 3 textos) + 4 (juego2) + 4 (juego3)
 
-// Juego 1 (Señalar partes)
+// Juego 1 (Grid de imágenes - pool de textos)
+let game1Pool = [];
 let game1CurrentIndex = 0;
-let game1Shuffled = [];
-let game1Completed = [];
+let game1Completed = 0;
+let game1Locked = false;
 
-// Juego 2 (Clasificar en cajas)
-let game2Selected = null;
-let game2Locked = false;
+// Juego 2 (Ordenar fases)
+let game2Shuffled = [];
+let game2Done = false;
+
+// Juego 3 (Emparejar)
+let game3Matches = 0;
+let game3SelectedCard = null;
+const game3TotalPairs = 4;
 
 /* ====================================================
    SISTEMA DE AUDIO Y TTS
@@ -558,11 +554,8 @@ function applyLanguage(lang) {
     document.getElementById('playBtn').innerHTML = t.startBtn;
     document.getElementById('game1Title').innerHTML = t.game1Title;
     document.getElementById('game2Title').innerHTML = t.game2Title;
-    document.getElementById('boxBrazosTitle').innerHTML = t.boxBrazos;
-    document.getElementById('boxPiernasTitle').innerHTML = t.boxPiernas;
-    document.getElementById('boxTroncoTitle').innerHTML = t.boxTronco;
-    document.getElementById('checkBtnGame2').innerHTML = t.checkBtn;
-    document.getElementById('continueBtnGame2').innerHTML = t.continueBtn;
+    document.getElementById('game3Title').innerHTML = t.game3Title;
+    document.getElementById('checkPhasesBtn').innerHTML = t.checkBtn;
     document.getElementById('finalTitle').innerHTML = t.finalTitle;
     document.getElementById('scoreLabel').innerHTML = t.scoreLabel;
     document.getElementById('backBtn').innerHTML = t.backBtn;
@@ -580,15 +573,29 @@ function applyLanguage(lang) {
     document.getElementById('playerName').placeholder = t.namePlaceholder;
     document.getElementById('playerSurname').placeholder = t.surnamePlaceholder;
 
-    if (currentScreen === 'game1' && game1CurrentIndex < game1Shuffled.length) {
-        const idx = game1Shuffled[game1CurrentIndex];
-        document.getElementById('game1WordText').innerHTML = game1Data[lang][idx].text;
-        speakText(game1Data[lang][idx].text, lang);
+    if (currentScreen === 'game1' && game1CurrentIndex < game1Pool.length) {
+        const q = game1Pool[game1CurrentIndex];
+        const text = stagesData[lang][q.stageIndex].texts[q.textIndex];
+        document.getElementById('game1WordText').innerHTML = text;
+        speakText(text, lang);
+        document.querySelectorAll('#imageGrid1 .image-cell-large').forEach(cell => {
+            const origIdx = parseInt(cell.dataset.origIndex);
+            cell.querySelector('img').src = stagesData[lang][origIdx].img;
+            cell.querySelector('img').alt = stagesData[lang][origIdx].key;
+        });
     } else if (currentScreen === 'game2') {
-        document.querySelectorAll('#game2Screen .draggable-item').forEach(el => {
-            const origIndex = parseInt(el.dataset.origIndex);
-            el.childNodes.forEach(n => { if (n.nodeType === 3) n.remove(); });
-            el.appendChild(document.createTextNode(game2Data[lang][origIndex].text));
+        const phasesContainer = document.getElementById('phasesContainer');
+        Array.from(phasesContainer.querySelectorAll('.phase-card')).forEach((card) => {
+            const origIndex = parseInt(card.dataset.origIndex);
+            card.querySelector('.phase-text').innerHTML = game2Data[lang][origIndex];
+        });
+    } else if (currentScreen === 'game3') {
+        const container = document.getElementById('game3Container');
+        Array.from(container.querySelectorAll('.memory-card:not(.matched)')).forEach(card => {
+            const origIndex = parseInt(card.dataset.origIndex);
+            const type = card.dataset.type;
+            const item = game3Data[lang][origIndex];
+            card.textContent = type === 'term' ? item.term : item.def;
         });
     }
 }
@@ -625,91 +632,87 @@ document.getElementById('playBtn').addEventListener('click', () => {
 });
 
 /* ====================================================
-   JUEGO 1: SEÑALAR PARTES
+   JUEGO 1: GRID DE IMÁGENES (etapas de la vida)
 ===================================================== */
 function initGame1() {
     totalErrors = 0;
-    game1Completed = [];
-    game1Shuffled = shuffleArray([...Array(game1Data.es.length).keys()]);
+    game1Completed = 0;
     game1CurrentIndex = 0;
+    game1Locked = false;
     document.getElementById('trophyDiv').classList.add('hidden');
+
+    // Cola de 12 preguntas (4 etapas x 3 textos) barajada
+    const pool = [];
+    stagesData.es.forEach((stage, stageIndex) => {
+        stage.texts.forEach((_, textIndex) => {
+            pool.push({ stageIndex, textIndex });
+        });
+    });
+    game1Pool = shuffleArray(pool);
+
+    buildImageGrid1();
     showGame1Word();
-    buildHotspots();
+}
+
+function buildImageGrid1() {
+    const grid = document.getElementById('imageGrid1');
+    grid.innerHTML = '';
+    const cellOrder = shuffleArray([...Array(stagesData.es.length).keys()]);
+    cellOrder.forEach(origIdx => {
+        const cell = document.createElement('div');
+        cell.className = 'image-cell-large';
+        cell.dataset.origIndex = origIdx;
+        const stage = stagesData[currentLang][origIdx];
+        cell.innerHTML = `<img src="${stage.img}" alt="${stage.key}"><div class="cell-flash"></div>`;
+        cell.addEventListener('click', () => checkGame1Answer(origIdx, cell));
+        grid.appendChild(cell);
+    });
 }
 
 function showGame1Word() {
-    if (game1CurrentIndex >= game1Shuffled.length) {
+    if (game1CurrentIndex >= game1Pool.length) {
         endGame1();
         return;
     }
-    const idx = game1Shuffled[game1CurrentIndex];
-    const word = game1Data[currentLang][idx].text;
-    document.getElementById('game1WordText').innerHTML = word;
+    game1Locked = false;
+    const q = game1Pool[game1CurrentIndex];
+    const text = stagesData[currentLang][q.stageIndex].texts[q.textIndex];
+    document.getElementById('game1WordText').innerHTML = text;
     setTimeout(() => {
-        speakText(word, currentLang);
+        speakText(text, currentLang);
     }, 300);
     updateProgress();
 }
 
-function buildHotspots() {
-    const wrapper = document.getElementById('hotspotImageWrapper');
-    const container = wrapper.querySelector('.hotspots-container');
-    container.innerHTML = '';
-    const scale = wrapper.offsetWidth / 936;
-
-    game1Data[currentLang].forEach((item, idx) => {
-        const [x1,y1,x2,y2] = item.coords;
-        const hotspot = document.createElement('button');
-        hotspot.className = 'hotspot';
-        hotspot.style.left = (x1 * scale) + 'px';
-        hotspot.style.top = (y1 * scale) + 'px';
-        hotspot.style.width = ((x2 - x1) * scale) + 'px';
-        hotspot.style.height = ((y2 - y1) * scale) + 'px';
-        hotspot.style.backgroundColor = 'transparent';
-        hotspot.dataset.index = idx;
-        hotspot.addEventListener('click', () => checkGame1Answer(idx));
-        container.appendChild(hotspot);
-    });
-}
-
-let resizeDebounceTimer = null;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeDebounceTimer);
-    resizeDebounceTimer = setTimeout(() => {
-        if (currentScreen === 'game1') {
-            buildHotspots();
-        }
-    }, 200);
-});
-
-function checkGame1Answer(idx) {
+function checkGame1Answer(idx, cell) {
+    if (game1Locked) return;
     safeCancelSpeech();
-    const correct = idx === game1Shuffled[game1CurrentIndex];
-    const hotspot = document.querySelector(`#game1Screen [data-index="${idx}"]`);
+    const q = game1Pool[game1CurrentIndex];
+    const correct = idx === q.stageIndex;
 
     if (correct) {
-        hotspot.style.backgroundColor = '#2ecc71';
+        game1Locked = true;
+        cell.classList.add('flash-correct');
         playSound('correcto');
-        game1Completed.push(game1Shuffled[game1CurrentIndex]);
+        game1Completed++;
         setTimeout(() => {
-            hotspot.style.backgroundColor = 'transparent';
+            cell.classList.remove('flash-correct');
             game1CurrentIndex++;
             showGame1Word();
         }, 200);
     } else {
         totalErrors++;
-        hotspot.style.backgroundColor = '#e74c3c';
-        hotspot.classList.add('shake');
+        cell.classList.add('flash-error', 'shake');
         playSound('error');
-        setTimeout(() => { hotspot.style.backgroundColor = 'transparent'; }, 200);
-        setTimeout(() => { hotspot.classList.remove('shake'); }, 400);
+        setTimeout(() => { cell.classList.remove('flash-error'); }, 200);
+        setTimeout(() => { cell.classList.remove('shake'); }, 400);
     }
 }
 
 document.getElementById('btnPlayWord').addEventListener('click', () => {
-    if (game1CurrentIndex < game1Shuffled.length) {
-        const idx = game1Shuffled[game1CurrentIndex];
-        speakText(game1Data[currentLang][idx].text, currentLang);
+    if (game1CurrentIndex < game1Pool.length) {
+        const q = game1Pool[game1CurrentIndex];
+        speakText(stagesData[currentLang][q.stageIndex].texts[q.textIndex], currentLang);
     }
 });
 
@@ -723,157 +726,196 @@ function endGame1() {
 }
 
 /* ====================================================
-   JUEGO 2: CLASIFICAR EN CAJAS (tap-tap + drag&drop)
+   JUEGO 2: ORDENAR FASES
 ===================================================== */
 function initGame2() {
-    game2Selected = null;
-    game2Locked = false;
-    document.getElementById('checkBtnGame2').style.display = 'inline-flex';
-    document.getElementById('continueBtnGame2').classList.remove('show');
-    document.querySelectorAll('#game2Screen .sort-box').forEach(b => b.classList.remove('disabled'));
-    document.querySelectorAll('#game2Screen .sort-content').forEach(c => c.innerHTML = '');
+    game2Done = false;
+    document.getElementById('checkPhasesBtn').disabled = false;
+    game2Shuffled = shuffleArray([...Array(game2Data.es.length).keys()]);
+    updateProgress();
+    buildPhases();
+}
 
-    const bank = document.getElementById('g2Bank');
-    bank.innerHTML = '';
-    const order = shuffleArray([...Array(game2Data.es.length).keys()]);
-    order.forEach(idx => {
-        bank.appendChild(createClassCard(idx));
+function buildPhases() {
+    const container = document.getElementById('phasesContainer');
+    container.innerHTML = '';
+    game2Shuffled.forEach((idx, pos) => {
+        const card = document.createElement('div');
+        card.className = 'phase-card';
+        card.dataset.origIndex = idx;
+        card.dataset.position = pos;
+        const text = game2Data[currentLang][idx];
+        card.innerHTML = `
+            <div class="phase-text">${text}</div>
+            <div class="phase-controls">
+                <button class="phase-btn up-btn" data-pos="${pos}">▲</button>
+                <button class="phase-btn down-btn" data-pos="${pos}">▼</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+    updatePhaseButtons();
+}
+
+function updatePhaseButtons() {
+    const cards = document.querySelectorAll('.phase-card');
+    cards.forEach((card, i) => {
+        const upBtn = card.querySelector('.up-btn');
+        const downBtn = card.querySelector('.down-btn');
+        upBtn.disabled = i === 0;
+        downBtn.disabled = i === cards.length - 1;
+        upBtn.addEventListener('click', () => movePhase(i, -1));
+        downBtn.addEventListener('click', () => movePhase(i, 1));
+    });
+}
+
+function movePhase(pos, dir) {
+    playSound('tap');
+    const newPos = pos + dir;
+    if (newPos < 0 || newPos >= game2Shuffled.length) return;
+    const temp = game2Shuffled[pos];
+    game2Shuffled[pos] = game2Shuffled[newPos];
+    game2Shuffled[newPos] = temp;
+    buildPhases();
+}
+
+document.getElementById('checkPhasesBtn').addEventListener('click', () => {
+    if (game2Done) return;
+    playSound('tap');
+    const cards = document.querySelectorAll('.phase-card');
+    let allCorrect = true;
+    cards.forEach((card, i) => {
+        const isCorrect = game2Shuffled[i] === i;
+        if (isCorrect) {
+            card.classList.add('correct');
+            card.classList.remove('incorrect');
+        } else {
+            card.classList.add('incorrect');
+            card.classList.remove('correct');
+            card.classList.add('shake');
+            totalErrors++;
+            allCorrect = false;
+        }
     });
     updateProgress();
-}
-
-function createClassCard(origIdx) {
-    const item = game2Data[currentLang][origIdx];
-    const el = document.createElement('div');
-    el.className = 'draggable-item';
-    el.textContent = item.text;
-    el.dataset.type = item.type;
-    el.dataset.origIndex = origIdx;
-    el.draggable = true;
-    el.addEventListener('click', () => selectClassItem(el, false));
-    el.addEventListener('dragstart', e => {
-        e.dataTransfer.setData('text/plain', String(origIdx));
-        e.dataTransfer.effectAllowed = 'move';
-        selectClassItem(el, true);
-    });
-    return el;
-}
-
-function selectClassItem(el, fromDrag) {
-    if (game2Locked) return;
-    if (game2Selected === el) { el.classList.remove('selected'); game2Selected = null; return; }
-    if (game2Selected) game2Selected.classList.remove('selected');
-    game2Selected = el;
-    el.classList.add('selected');
-    if (!fromDrag) playSound('tap');
-}
-
-// Al pulsar un hueso ya colocado en una caja, vuelve al banco
-document.getElementById('game2Screen').addEventListener('click', e => {
-    if (game2Locked) return;
-    const item = e.target.closest('#game2Screen .sort-content .draggable-item');
-    if (item && !item.classList.contains('correct') && !item.classList.contains('wrong')) {
-        document.getElementById('g2Bank').appendChild(item);
-        item.classList.remove('selected');
-        if (game2Selected === item) game2Selected = null;
-        playSound('tap');
-    }
-});
-
-document.querySelectorAll('#game2Screen .sort-box').forEach(box => {
-    const content = box.querySelector('.sort-content');
-
-    box.addEventListener('click', () => {
-        if (game2Locked) return;
-        if (game2Selected && game2Selected.parentElement !== content) {
-            content.appendChild(game2Selected);
-            game2Selected.classList.remove('selected');
-            game2Selected = null;
-            playSound('tap');
-        }
-    });
-
-    box.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
-    box.addEventListener('drop', e => {
-        e.preventDefault();
-        if (game2Locked) return;
-        let card = game2Selected;
-        if (!card) {
-            const idx = e.dataTransfer.getData('text/plain');
-            card = document.querySelector('#game2Screen [data-orig-index="' + idx + '"]');
-        }
-        if (card) {
-            content.appendChild(card);
-            card.classList.remove('selected');
-            game2Selected = null;
-            playSound('tap');
-        }
-    });
-});
-
-const g2BankEl = document.getElementById('g2Bank');
-g2BankEl.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
-g2BankEl.addEventListener('drop', e => {
-    e.preventDefault();
-    if (game2Locked) return;
-    let card = game2Selected;
-    if (!card) {
-        const idx = e.dataTransfer.getData('text/plain');
-        card = document.querySelector('#game2Screen [data-orig-index="' + idx + '"]');
-    }
-    if (card) {
-        g2BankEl.appendChild(card);
-        card.classList.remove('selected');
-        game2Selected = null;
-        playSound('tap');
-    }
-});
-
-function checkGame2() {
-    if (game2Locked) return;
-    let correct = 0, errors = 0;
-    document.querySelectorAll('#game2Screen .sort-box').forEach(box => {
-        const boxType = box.dataset.type;
-        box.querySelectorAll('.draggable-item').forEach(item => {
-            item.classList.remove('correct', 'wrong');
-            if (item.dataset.type === boxType) {
-                item.classList.add('correct');
-                correct++;
-            } else {
-                item.classList.add('wrong');
-                errors++;
-            }
-        });
-    });
-    document.querySelectorAll('#g2Bank .draggable-item').forEach(item => {
-        item.classList.add('wrong');
-        errors++;
-    });
-
-    game2Locked = true;
-    totalErrors += errors;
-    safeCancelSpeech();
-    document.querySelectorAll('#game2Screen .sort-box').forEach(b => b.classList.add('disabled'));
-    document.getElementById('checkBtnGame2').style.display = 'none';
-    document.getElementById('continueBtnGame2').classList.add('show');
-    updateProgress(correct);
-
-    if (errors === 0) {
-        playSound('completado');
+    if (allCorrect) {
+        game2Done = true;
+        playSound('correcto');
+        setTimeout(() => {
+            safeCancelSpeech();
+            playSound('completado');
+            setTimeout(() => {
+                showScreen('game3');
+                initGame3();
+            }, 1000);
+        }, 500);
     } else {
         playSound('error');
+        setTimeout(() => {
+            cards.forEach(card => {
+                card.classList.remove('correct', 'incorrect', 'shake');
+            });
+        }, 1500);
     }
+});
+
+/* ====================================================
+   JUEGO 3: EMPAREJAR
+===================================================== */
+function initGame3() {
+    document.getElementById('timerDisplay3').textContent = formatTime(Date.now() - startTime);
+    game3Matches = 0;
+    game3SelectedCard = null;
+    updateProgress();
+    buildMatchCards();
 }
 
-document.getElementById('checkBtnGame2').addEventListener('click', () => {
-    playSound('tap');
-    checkGame2();
-});
+function buildMatchCards() {
+    const container = document.getElementById('game3Container');
+    container.innerHTML = '';
 
-document.getElementById('continueBtnGame2').addEventListener('click', () => {
-    playSound('tap');
-    endGame();
-});
+    const data = game3Data[currentLang];
+    const indices = Array.from({ length: data.length }, (_, i) => i);
+
+    const termOrder = shuffleArray(indices);
+    const defOrder = shuffleArray(indices);
+
+    for (let row = 0; row < data.length; row++) {
+        container.appendChild(createMatchCard(termOrder[row], 'term'));
+        container.appendChild(createMatchCard(defOrder[row], 'def'));
+    }
+
+    container.onclick = handleMatchCardClick;
+}
+
+function createMatchCard(origIndex, type) {
+    const card = document.createElement('div');
+    card.className = 'memory-card';
+    card.dataset.origIndex = origIndex;
+    card.dataset.type = type;
+    const item = game3Data[currentLang][origIndex];
+    card.textContent = type === 'term' ? item.term : item.def;
+    return card;
+}
+
+function handleMatchCardClick(e) {
+    const target = e.target.closest('.memory-card');
+    if (!target || target.classList.contains('matched')) return;
+
+    if (!game3SelectedCard) {
+        playSound('tap');
+        game3SelectedCard = target;
+        game3SelectedCard.classList.add('selected');
+        return;
+    }
+
+    if (target === game3SelectedCard) {
+        game3SelectedCard.classList.remove('selected');
+        game3SelectedCard = null;
+        return;
+    }
+
+    if (target.dataset.type === game3SelectedCard.dataset.type) {
+        game3SelectedCard.classList.remove('selected');
+        playSound('tap');
+        game3SelectedCard = target;
+        game3SelectedCard.classList.add('selected');
+        return;
+    }
+
+    safeCancelSpeech();
+    const prevCard = game3SelectedCard;
+    const idA = prevCard.dataset.origIndex;
+    const idB = target.dataset.origIndex;
+
+    if (idA === idB) {
+        playSound('correcto');
+        prevCard.classList.remove('selected');
+        prevCard.classList.add('matched');
+        target.classList.add('matched');
+        game3SelectedCard = null;
+        game3Matches++;
+        updateProgress();
+        if (game3Matches === game3TotalPairs) {
+            setTimeout(() => {
+                safeCancelSpeech();
+                playSound('completado');
+                setTimeout(() => endGame(), 1000);
+            }, 500);
+        }
+    } else {
+        totalErrors++;
+        playSound('error');
+        prevCard.classList.remove('selected');
+        prevCard.classList.add('flash-error');
+        target.classList.add('flash-error');
+        game3SelectedCard = null;
+        setTimeout(() => {
+            prevCard.classList.remove('flash-error');
+            target.classList.remove('flash-error');
+        }, 400);
+    }
+}
 
 /* ====================================================
    FUNCIONES DE NAVEGACIÓN
@@ -888,6 +930,8 @@ function showScreen(screen) {
         document.getElementById('game1Screen').classList.add('active');
     } else if (screen === 'game2') {
         document.getElementById('game2Screen').classList.add('active');
+    } else if (screen === 'game3') {
+        document.getElementById('game3Screen').classList.add('active');
     } else if (screen === 'final') {
         document.getElementById('finalScreen').classList.add('active');
     }
@@ -902,6 +946,7 @@ function startTimer() {
         const elapsed = Date.now() - startTime;
         document.getElementById('timerDisplay').textContent = formatTime(elapsed);
         document.getElementById('timerDisplay2').textContent = formatTime(elapsed);
+        document.getElementById('timerDisplay3').textContent = formatTime(elapsed);
     }, 10);
 }
 
@@ -927,12 +972,13 @@ function getElapsedSeconds() {
 /* ====================================================
    PROGRESO
 ===================================================== */
-function updateProgress(game2Correct) {
-    const g2 = typeof game2Correct === 'number' ? game2Correct : 0;
-    const completed = game1Completed.length + g2;
+function updateProgress() {
+    const g2 = document.querySelectorAll('.phase-card.correct').length === game2Data.es.length ? game2Data.es.length : 0;
+    const completed = game1Completed + g2 + game3Matches;
     const percent = Math.min(100, (completed / TOTAL_ITEMS) * 100);
     document.getElementById('progressFill').style.width = percent + '%';
     document.getElementById('progressFill2').style.width = percent + '%';
+    document.getElementById('progressFill3').style.width = percent + '%';
 }
 
 /* ====================================================
@@ -1132,11 +1178,15 @@ window.addEventListener('load', () => {
 });
 
 function preloadImages() {
+    const stageUrls = stagesData.es.map(s => s.img);
+    const allUrls = ['https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png', ...stageUrls];
     return Promise.race([
-        Promise.all([
-            new Promise(resolve => { const img = new Image(); img.onload = resolve; img.onerror = resolve; img.src = 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO2/Nuestro%20cuerpo/Esqueleto.png'; }),
-            new Promise(resolve => { const img = new Image(); img.onload = resolve; img.onerror = resolve; img.src = 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png'; })
-        ]),
+        Promise.all(allUrls.map(url => new Promise(resolve => {
+            const img = new Image();
+            img.onload = resolve;
+            img.onerror = resolve;
+            img.src = url;
+        }))),
         new Promise(resolve => setTimeout(resolve, 5000))
     ]);
 }
