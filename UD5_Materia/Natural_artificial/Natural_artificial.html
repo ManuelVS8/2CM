@@ -878,7 +878,10 @@
             dz.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
             dz.addEventListener('drop', handleDrop);
             dz.addEventListener('click', handleDropzoneClick);
-            dz.addEventListener('touchend', handleDropzoneClick);
+            dz.addEventListener('touchend', e => {
+                e.preventDefault(); // Evita que el navegador dispare también un 'click' sintético
+                handleDropzoneClick.call(dz);
+            });
         });
 
         // Banco de palabras en orden aleatorio

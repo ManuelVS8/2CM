@@ -1004,7 +1004,10 @@ function rebuildGame2Text(preserveCorrect) {
         dz.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
         dz.addEventListener('drop', handleDrop);
         dz.addEventListener('click', handleDropzoneClick);
-        dz.addEventListener('touchend', handleDropzoneClick);
+        dz.addEventListener('touchend', e => {
+            e.preventDefault(); // Evita el click sintético posterior que duplicaría la acción en móvil
+            handleDropzoneClick.call(dz);
+        });
     });
 
     bank.innerHTML = '';
