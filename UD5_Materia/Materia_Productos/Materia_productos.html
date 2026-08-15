@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="google" content="notranlate">
+    <title>Materiales y productos elaborados</title>
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/icono.ico">
+    <style>
+        /* ====== Reset & base ====== */
+        * { box-sizing: border-box; margin:0; padding:0; }
+        :root{
+            --blue-dark:#04032B;
+            --blue-700:#1a3a5f;
+            --blue-600:#254fba;
+            --orange:#f59e42;
+            --orange-700:#e67e22;
+            --bg-grad-1:#1a3a5f;
+            --bg-grad-2:#0d2340;
+            --white:#ffffff;
+            --green:#2ecc71;
+            --red:#e74c3c;
+            --panel:#E8EAFF;
+        }
+        body{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+            min-height:100vh; 
+            display:flex; 
+            justify-content:center; 
+            align-items: flex-start; 
+            color:#333; 
+            padding: 40px 10px 20px 10px; 
+        }
+        .game-container{
+            background:var(--white); border-radius:16px; box-shadow:0 12px 24px rgba(0,0,0,.12);
+            padding:1.5rem; max-width:980px; width:100%; min-height:640px; position:relative; overflow:hidden;
+            display:flex; flex-direction:column;
+        }
+        header{ text-align:center; margin-bottom:.8rem; margin-top:0.5rem; }
+        h1{ color:var(--blue-dark); font-size:clamp(1.8rem,5vw,2.8rem); font-weight:900; letter-spacing:.5px; margin-bottom: 0.5rem; }
+        .subtitle{ color:var(--blue-700); font-size:clamp(1rem,3vw,1.3rem); margin-top:.25rem; font-weight: 600; line-height: 1.4; }
+        .highlight-keyword{ color:var(--orange); font-weight:800; }
+        .text-green { color: var(--green); font-weight: 800; }
+        .text-red { color: var(--red); font-weight: 800; }
+
+        /* Buttons Base */
+        .btn{ color:#fff; border:none; border-radius:12px; cursor:pointer; font-weight:800;
+            transition:transform .1s ease, box-shadow .2s ease, background-color .25s ease;
+            display:inline-flex; align-items:center; justify-content:center; font-size: 1.1rem; gap: 10px; }
+        .btn:hover{ transform:translateY(-3px); box-shadow:0 6px 14px rgba(0,0,0,.15); }
+        .btn:active{ transform:translateY(0); }
+        
+        .btn-start { background: var(--orange); margin: 1rem auto; padding: 0.75rem 2rem; height: 55px; font-size: 1.3rem; min-width: 200px; }
+
+        /* Pantallas */
+        .screen{ display:none; animation:fadeIn .4s ease; flex-direction: column; flex:1; width: 100%; }
+        .screen.active{ display:flex; }
+        @keyframes fadeIn{ from{opacity:0; transform:translateY(15px);} to{opacity:1; transform:translateY(0);} }
+
+        /* Info & Progress */
+        .game-info{ display:flex; gap:1rem; align-items:center; justify-content:space-between; margin:1rem 0; width: 100%; }
+        .timer{ font-weight:900; color:var(--blue-700); font-size:1.2rem; min-width: 100px; text-align: right; }
+        .progress-bar{ flex:1; height:14px; background:#e6f2ff; border-radius:999px; overflow:hidden; border: 1px solid #d3e2ff; }
+        .progress-fill{ height:100%; width:0%; background: var(--orange); transition:width .4s ease; }
+
+        /* Pantalla Inicio */
+        .start-content{ display:flex; flex-direction:column; align-items:center; flex:1; padding:1rem; text-align: center; }
+        .advice-box{ background:var(--panel); border-left:5px solid var(--blue-700); padding:1.5rem; border-radius:12px;
+            color:var(--blue-700); max-width:800px; font-size:1.2rem; line-height: 1.6; margin-bottom: 1.5rem; }
+        .advice-anim-text { display: block; text-align: center; font-weight: 900; margin-top: 1rem; font-size: 1.5rem; }
+        .start-image-container { width: 100%; display: flex; justify-content: center; margin-top: auto; }
+        .start-image{ max-width: 450px; width: 100%; height: auto; }
+
+        .mute-btn{ background:var(--orange); color:#fff; border:2px solid #fff; width:42px; height:42px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; }
+
+        /* Controles superiores: idioma + silencio */
+        .top-controls{ position:absolute; top:1rem; right:1rem; display:flex; align-items:center; gap:8px; z-index:100; }
+        .lang-pill{ display:flex; align-items:center; background:#fff; border-radius:999px; padding:3px; gap:3px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.12); border:1px solid #e0e0e0; }
+        .lang-pill button{ width:34px; height:34px; border-radius:50%; border:none; font-size:1.15rem; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; background:transparent;
+            transition:background .2s, opacity .2s, transform .15s; }
+        .lang-pill button.active-lang{ background:var(--blue-600); transform:scale(1.08); }
+        .lang-pill button:not(.active-lang){ opacity:.5; }
+        .lang-pill button:hover:not(.active-lang){ opacity:.8; transform:scale(1.05); }
+
+        /* Juego 2: Efecto flotante y Ghosting */
+        .j2-board { display: flex; flex-direction: column; gap: 1.2rem; padding: 1rem; width: 100%; max-width: 980px; margin: 0 auto; flex:1; justify-content: center; }
+        .column { display: grid; grid-template-columns: repeat(5, 1fr); gap: .8rem; width: 100%; }
+        
+        .match-item { 
+            width: 100%; aspect-ratio: 4 / 3; border-radius: 12px; border: 4px solid #d3e2ff; cursor: pointer;
+            background-size: cover; background-repeat: no-repeat; background-position: center;
+            background-color: #white; transition: all 0.3s ease;
+        }
+        
+        /* Animación flotante para selección */
+        @keyframes itemPulse {
+            0% { transform: scale(1.05); }
+            50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(37, 79, 186, 0.4); }
+            100% { transform: scale(1.05); }
+        }
+        
+        /* Estado Seleccionado: Flota y tiene borde azul */
+        .match-item.selected:not(.matched) { 
+            border-color: var(--blue-600); 
+            animation: itemPulse 1s infinite ease-in-out; 
+            z-index: 10; 
+        }
+        
+        /* Estado Emparejado (Ghosting): Desaparece suavemente */
+        .match-item.matched { 
+            pointer-events: none; 
+            filter: grayscale(1) opacity(0.3); 
+            border-color: #ccc;
+            transform: scale(0.9) !important;
+            animation: none !important; 
+        }
+
+        /* Pantalla Final */
+        .results{ display:flex; flex-direction:column; align-items:center; gap:0.8rem; text-align:center; flex:1; justify-content:center; padding: 1rem; }
+        .big-score{ font-size:clamp(3rem,8vw,4.5rem); color:var(--blue-600); font-weight:900; margin: 0.5rem 0; }
+        #trophyBox { display: none; font-size: 5.5rem; animation: bounce 1s ease infinite; margin-bottom: 0.5rem; }
+        @keyframes bounce { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-20px); } }
+        .final-time { font-size: 1.3rem; color: var(--blue-700); font-weight: 600; margin-bottom: 0.5rem; }
+        .school-logo { width: 180px; margin-top: 1rem; }
+        .credit { font-weight: 700; color: #555; }
+
+        /* Animaciones Globales */
+        .shake { animation: shakeAnim 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shakeAnim {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+
+        .confetti{ position:fixed; width:12px; height:12px; border-radius:50%; animation: confetti-fall 3s linear forwards; z-index:1000; pointer-events: none; }
+        @keyframes confetti-fall{ 0%{ transform:translate(0, -20px) rotate(0); opacity:1;} 100%{ transform:translate(var(--tx), var(--ty)) rotate(360deg); opacity:0; } }
+
+        @media (max-width: 899px) {
+            .j2-board { flex-direction: row; align-items: flex-start; justify-content: center; gap: .8rem; }
+            .column { display: flex; flex-direction: column; gap: .6rem; width: auto; flex: 1 1 0; max-width: 220px; }
+        }
+
+        /* Hall of Fame */
+        .hall-of-fame{ background:var(--panel); border-radius:12px; padding:1rem; margin-top:1rem; width:100%; max-width:600px; }
+        .hall-of-fame-title{ color:var(--blue-700); font-weight:800; font-size:1.2rem; text-align:center; margin-bottom:.8rem; }
+        .hall-of-fame-table{ width:100%; border-collapse:collapse; font-size:.9rem; }
+        .hall-of-fame-table th{ background:var(--blue-600); color:white; padding:.5rem; text-align:left; }
+        .hall-of-fame-table td{ padding:.4rem .5rem; border-bottom:1px solid #ddd; }
+        .hall-of-fame-table tr:last-child td{ border-bottom:none; }
+        .hall-of-fame-table tr:nth-child(even){ background-color:rgba(255,255,255,.5); }
+        .hall-of-fame-error, .hall-of-fame-loading{ padding:1rem; text-align:center; color:var(--blue-700); font-style:italic; }
+        .hall-of-fame-error{ color:var(--red); }
+
+        /* Modal envío puntuación */
+        .modal-overlay{ position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);
+            display:none; align-items:center; justify-content:center; z-index:999; }
+        .modal-overlay.active{ display:flex; }
+        .modal-content{ background:white; padding:2rem; border-radius:15px; width:90%; max-width:400px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3); }
+        .modal-input{ width:100%; padding:10px; margin:10px 0; border:2px solid #ddd; border-radius:8px; font-size:1rem; }
+        .modal-validation-msg{ color:var(--red); font-size:.9rem; font-weight:700; margin:-4px 0 10px; text-align:center; }
+        .hidden{ display:none !important; }
+    </style>
+</head>
+<body>
+
+<div class="game-container" id="mainWrapper">
+    <div class="top-controls">
+        <div class="lang-pill">
+            <button class="lang-flag-btn active-lang" data-lang="es" title="Español">🇪🇸</button>
+            <button class="lang-flag-btn" data-lang="en" title="English">🇬🇧</button>
+        </div>
+        <button class="mute-btn" id="muteBtn">🔊</button>
+    </div>
+
+    <section class="screen active" id="startScreen">
+        <header>
+            <h1 id="startTitle">Materiales y productos elaborados</h1>
+            <div class="subtitle" id="startSubtitle">Relaciona los materiales con su producto elaborado</div>
+        </header>
+        <div class="start-content">
+            <div class="advice-box">
+                <span id="startAdvice">Recuerda: elegimos los <span class="highlight-keyword">materiales</span> dependiendo de sus características para fabricar <span class="highlight-keyword">productos</span> <span class="highlight-keyword">elaborados</span>.</span>
+                <div class="advice-anim-text" id="startAdviceLuck">¡Buena suerte!</div>
+            </div>
+            <div class="start-image-container">
+                <img class="start-image" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png" alt="Niños">
+            </div>
+            <button class="btn btn-start" id="startBtn">Comenzar</button>
+
+            <div class="hall-of-fame" id="hallOfFame">
+                <div class="hall-of-fame-title">🏆 <span id="hofTitle">Mejores puntuaciones</span> 🏆</div>
+                <table class="hall-of-fame-table">
+                    <thead>
+                        <tr>
+                            <th id="hofPos">Posición</th>
+                            <th id="hofName">Nombre</th>
+                            <th id="hofPoints">Puntos</th>
+                            <th id="hofTime">Tiempo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hofTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="screen" id="gameScreen">
+        <header>
+            <h1 id="game2Title">Materiales y productos elaborados</h1>
+            <div class="subtitle" id="game2Subtitle">Relaciona cada material con su producto elaborado.</div>
+        </header>
+        <div class="game-info">
+            <div class="progress-bar"><div class="progress-fill" id="progGame"></div></div>
+            <div class="timer" id="timerDisplay">00:00.0</div>
+        </div>
+        <div class="j2-board" id="matchBoard">
+            <div class="column" id="colRaw"></div>
+            <div class="column" id="colProd"></div>
+        </div>
+    </section>
+
+    <section class="screen" id="finalScreen">
+        <header><h1 id="finalTitle">Materiales y productos elaborados</h1></header>
+        <div class="results">
+            <div id="trophyBox">🏆</div>
+            <div style="font-size: 1.5rem; font-weight: 700;" id="scoreLabel">Puntuación:</div>
+            <div class="big-score" id="finalScore">0</div>
+            <div class="final-time"><span id="timeLabel">Tiempo total:</span> <span id="totalTime">00:00.0</span></div>
+            <div id="finalMsg" class="subtitle" style="margin-bottom: 1.5rem;"></div>
+            <button class="btn btn-start" id="restartBtn">Volver al menú</button>
+            <div class="credit">Creado por Manuel J. Ventura</div>
+            <img class="school-logo" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Siurot.png" alt="Logo Colegio">
+        </div>
+    </section>
+</div>
+
+<!-- Modal de Envío de Puntuación -->
+<div class="modal-overlay" id="submitModal">
+    <div class="modal-content">
+        <h2 id="modalTitle">¡Juego Terminado!</h2>
+        <p><span id="modalTimeLabel">Tu tiempo:</span> <span id="modalTime">00:00.0</span></p>
+        <input class="modal-input" id="playerName" placeholder="Nombre" maxlength="15" />
+        <input class="modal-input" id="playerSurname" placeholder="Apellido" maxlength="20" />
+        <p id="modalValidationMsg" class="modal-validation-msg hidden"></p>
+        <button class="btn btn-start" id="submitScoreBtn" style="min-width:auto; height:48px; padding:.6rem 1.4rem; font-size:1rem;">Guardar</button>
+        <button class="btn" id="discardScoreBtn" style="background:#e6f2ff; color:var(--blue-700); min-width:auto; height:48px; padding:.6rem 1.4rem; font-size:1rem; margin-top:.5rem;">Cancelar</button>
+    </div>
+</div>
+
+<script>
+    // --- Configuración de Audio (URLs corregidas con ?raw=true) ---
+    const audioFiles = {
+        completado: 'https://github.com/ManuelVS8/Efectos_audio/raw/main/Completado.mp3',
+        correcto: 'https://github.com/ManuelVS8/Efectos_audio/raw/main/Correcto.mp3',
+        victoria: 'https://github.com/ManuelVS8/Efectos_audio/raw/main/Termin%C3%A9.mp3',
+        error: 'https://github.com/ManuelVS8/Efectos_audio/raw/main/Error.mp3',
+        tap: 'https://github.com/ManuelVS8/Efectos_audio/raw/main/Tap.mp3'
+    };
+
+    // --- Datos del Juego ---
+    const ALL_PAIRS = [
+        { id: 1, raw: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Algod%C3%B3n.png', prod: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Camiseta.png' },
+        { id: 2, raw: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Arcilla.png', prod: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Vasija.png' },
+        { id: 3, raw: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Granito.png', prod: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Carretera.png' },
+        { id: 4, raw: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Lana.png', prod: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Chaleco.png' },
+        { id: 5, raw: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Marmol.png', prod: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Estatua.png' },
+        { id: 6, raw: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Hierro.png', prod: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Sart%C3%A9n.png' },
+        { id: 7, raw: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Madera.png', prod: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Silla.png' },
+        { id: 8, raw: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Petroleo.png', prod: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Pl%C3%A1stico.png' },
+        { id: 9, raw: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/Piel.png', prod: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/bolso.png' },
+        { id: 10, raw: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/mimbre1.png', prod: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO1/Productos/mimbre2.png' }
+    ];
+
+    // --- Configuración Hall of Fame ---
+    const SHEET_NAME = "Elaborados2";
+    const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxUf-hXwjEkLUjzpOWBo0y88IcX_9wASGLiJfZSKR9494UsBQlrPn0Wd-D6VYnyXZSO/exec";
+
+    // --- Variables de Estado ---
+    let isMuted = false, startTime = 0, timerInterval = null, totalElapsed = 0;
+    let currentLevel = 1;
+    let levelPairs = [];
+    let totalMatches = 0;
+    let totalAttempts = 0;
+    let selectedRaw = null, selectedProd = null;
+    let isHofLoading = false;
+    let isSubmittingScore = false;
+    let finalScoreVal = 0;
+    let currentLang = 'es';
+    
+    // Precarga de audios
+    const audioObjects = {};
+    Object.keys(audioFiles).forEach(key => {
+        audioObjects[key] = new Audio(audioFiles[key]);
+        audioObjects[key].load();
+    });
+
+    // --- Funciones de Utilidad ---
+    function playSnd(key) {
+        if(isMuted) return;
+        const a = audioObjects[key];
+        if (!a) return;
+        a.currentTime = 0;
+        a.play().catch(e => console.log("Audio play error (interaction needed?):", e));
+    }
+
+    function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
+    
+    function formatTime(ms) {
+        const d = ms / 1000;
+        const m = Math.floor(d / 60).toString().padStart(2, '0');
+        const s = Math.floor(d % 60).toString().padStart(2, '0');
+        const dec = Math.round((d % 1) * 10);
+        return `${m}:${s}.${dec}`;
+    }
+
+    function applyShake(id) {
+        const el = document.getElementById(id);
+        el.classList.remove('shake');
+        void el.offsetWidth; // Trigger reflow
+        el.classList.add('shake');
+    }
+
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    // --- i18n ---
+    const i18n = {
+        es: {
+            startTitle: 'Materiales y productos elaborados',
+            startSubtitle: 'Relaciona los materiales con su producto elaborado',
+            startAdvice: 'Recuerda: elegimos los <span class="highlight-keyword">materiales</span> dependiendo de sus características para fabricar <span class="highlight-keyword">productos</span> <span class="highlight-keyword">elaborados</span>.',
+            startAdviceLuck: '¡Buena suerte!',
+            startBtn: 'Comenzar',
+            hofTitle: 'Mejores puntuaciones',
+            hofPos: 'Posición', hofName: 'Nombre', hofPoints: 'Puntos', hofTime: 'Tiempo',
+            game2Title: 'Materiales y productos elaborados',
+            game2Subtitle: 'Relaciona cada material con su producto elaborado.',
+            finalTitle: 'Materiales y productos elaborados',
+            scoreLabel: 'Puntuación:',
+            timeLabel: 'Tiempo total:',
+            restartBtn: 'Volver al menú',
+            modalTitle: '¡Juego Terminado!',
+            modalTimeLabel: 'Tu tiempo:',
+            modalSave: 'Guardar',
+            modalCancel: 'Cancelar',
+            namePlaceholder: 'Nombre',
+            surnamePlaceholder: 'Apellido',
+            validationMsg: 'Por favor, escribe tu nombre y apellido',
+            msgPerfect: '¡Enhorabuena, puntuación máxima!',
+            msgOther: '¡Buen trabajo! Sigue practicando'
+        },
+        en: {
+            startTitle: 'Materials and manufactured products',
+            startSubtitle: 'Match the materials with their manufactured product',
+            startAdvice: 'Remember: we choose <span class="highlight-keyword">materials</span> depending on their characteristics to make <span class="highlight-keyword">manufactured</span> <span class="highlight-keyword">products</span>.',
+            startAdviceLuck: 'Good luck!',
+            startBtn: 'Start',
+            hofTitle: 'Best scores',
+            hofPos: 'Position', hofName: 'Name', hofPoints: 'Points', hofTime: 'Time',
+            game2Title: 'Materials and manufactured products',
+            game2Subtitle: 'Match each material with its manufactured product.',
+            finalTitle: 'Materials and manufactured products',
+            scoreLabel: 'Score:',
+            timeLabel: 'Total time:',
+            restartBtn: 'Back to menu',
+            modalTitle: 'Game Over!',
+            modalTimeLabel: 'Your time:',
+            modalSave: 'Save',
+            modalCancel: 'Cancel',
+            namePlaceholder: 'Name',
+            surnamePlaceholder: 'Surname',
+            validationMsg: 'Please fill in name and surname',
+            msgPerfect: 'Congratulations, top score!',
+            msgOther: 'Good work! Keep practising'
+        }
+    };
+
+    document.querySelectorAll('.lang-flag-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.classList.contains('active-lang')) return;
+            document.querySelectorAll('.lang-flag-btn').forEach(b => b.classList.remove('active-lang'));
+            btn.classList.add('active-lang');
+            currentLang = btn.dataset.lang;
+            document.documentElement.lang = currentLang;
+            applyLanguage(currentLang);
+        });
+    });
+
+    function applyLanguage(lang) {
+        const t = i18n[lang];
+        document.getElementById('startTitle').innerHTML = t.startTitle;
+        document.getElementById('startSubtitle').innerHTML = t.startSubtitle;
+        document.getElementById('startAdvice').innerHTML = t.startAdvice;
+        document.getElementById('startAdviceLuck').innerHTML = t.startAdviceLuck;
+        document.getElementById('startBtn').innerHTML = t.startBtn;
+        document.getElementById('hofTitle').innerHTML = t.hofTitle;
+        document.getElementById('hofPos').innerHTML = t.hofPos;
+        document.getElementById('hofName').innerHTML = t.hofName;
+        document.getElementById('hofPoints').innerHTML = t.hofPoints;
+        document.getElementById('hofTime').innerHTML = t.hofTime;
+
+        document.getElementById('game2Title').innerHTML = t.game2Title;
+        document.getElementById('game2Subtitle').innerHTML = t.game2Subtitle;
+
+        document.getElementById('finalTitle').innerHTML = t.finalTitle;
+        document.getElementById('scoreLabel').innerHTML = t.scoreLabel;
+        document.getElementById('timeLabel').innerHTML = t.timeLabel;
+        document.getElementById('restartBtn').innerHTML = t.restartBtn;
+
+        document.getElementById('modalTitle').innerHTML = t.modalTitle;
+        document.getElementById('modalTimeLabel').innerHTML = t.modalTimeLabel;
+        document.getElementById('submitScoreBtn').innerHTML = t.modalSave;
+        document.getElementById('discardScoreBtn').innerHTML = t.modalCancel;
+        document.getElementById('playerName').placeholder = t.namePlaceholder;
+        document.getElementById('playerSurname').placeholder = t.surnamePlaceholder;
+
+        if (document.getElementById('finalScreen').classList.contains('active')) {
+            document.getElementById('finalMsg').textContent = finalScoreVal === 100 ? t.msgPerfect : t.msgOther;
+        }
+    }
+
+    // --- Lógica del Juego ---
+
+    function startGame() {
+        // Desbloqueo de AudioContext
+        const context = new (window.AudioContext || window.webkitAudioContext)();
+        if (context.state === 'suspended') context.resume();
+        
+        playSnd('tap');
+        showScreen('gameScreen');
+        
+        // Iniciar variables
+        currentLevel = 1;
+        totalMatches = 0;
+        totalAttempts = 0;
+        totalElapsed = 0;
+        
+        // Iniciar Timer
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+            totalElapsed = Date.now() - startTime;
+            document.getElementById('timerDisplay').textContent = formatTime(totalElapsed);
+        }, 100);
+
+        // Barajar los 10 pares una vez y dividir en niveles
+        const shuffledAll = shuffle([...ALL_PAIRS]);
+        levelPairs = [
+            shuffledAll.slice(0, 5), // Nivel 1
+            shuffledAll.slice(5, 10) // Nivel 2
+        ];
+
+        loadLevel();
+    }
+
+    function loadLevel() {
+        selectedRaw = null;
+        selectedProd = null;
+        
+        const pairs = levelPairs[currentLevel - 1];
+        const colRaw = document.getElementById('colRaw');
+        const colProd = document.getElementById('colProd');
+        colRaw.innerHTML = ''; 
+        colProd.innerHTML = '';
+
+        // Barajar presentación dentro de cada columna
+        const rawList = shuffle([...pairs]);
+        const prodList = shuffle([...pairs]);
+
+        rawList.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'match-item'; 
+            div.style.backgroundImage = `url(${p.raw})`;
+            div.dataset.id = p.id;
+            div.dataset.type = 'raw';
+            div.onclick = () => handleMatchClick(div);
+            colRaw.appendChild(div);
+        });
+
+        prodList.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'match-item'; 
+            div.style.backgroundImage = `url(${p.prod})`;
+            div.dataset.id = p.id;
+            div.dataset.type = 'prod';
+            div.onclick = () => handleMatchClick(div);
+            colProd.appendChild(div);
+        });
+
+        updateProgress();
+    }
+
+    function updateProgress() {
+        // Progreso total sobre 10 pares
+        const percent = (totalMatches / 10) * 100;
+        document.getElementById('progGame').style.width = percent + '%';
+    }
+
+    function handleMatchClick(el) {
+        if(el.classList.contains('matched')) return;
+
+        const type = el.dataset.type;
+        const isRaw = type === 'raw';
+        
+        // Determinar variables de selección
+        let currentSelection = isRaw ? selectedRaw : selectedProd;
+        let otherSelection = isRaw ? selectedProd : selectedRaw;
+
+        // CASO 1: No hay nada seleccionado en NINGUNA columna -> Sonido TAP
+        if (!currentSelection && !otherSelection) {
+            playSnd('tap');
+            el.classList.add('selected');
+            if (isRaw) selectedRaw = el; else selectedProd = el;
+            return;
+        }
+
+        // CASO 2: Hay algo seleccionado en la OTRA columna -> INTENTO DE EMPAREJAMIENTO
+        if (otherSelection) {
+            el.classList.add('selected');
+            if (isRaw) selectedRaw = el; else selectedProd = el;
+            
+            checkMatch();
+            return; 
+        }
+
+        // CASO 3: Hay algo seleccionado en la MISMA columna
+        if (currentSelection) {
+            if (currentSelection === el) {
+                // Deseleccionar
+                el.classList.remove('selected');
+                if (isRaw) selectedRaw = null; else selectedProd = null;
+                playSnd('tap');
+            } else {
+                // Cambiar selección
+                currentSelection.classList.remove('selected');
+                el.classList.add('selected');
+                if (isRaw) selectedRaw = el; else selectedProd = el;
+                playSnd('tap');
+            }
+        }
+    }
+
+    function checkMatch() {
+        if(!selectedRaw || !selectedProd) return;
+
+        totalAttempts++;
+        
+        if(selectedRaw.dataset.id === selectedProd.dataset.id) {
+            playSnd('correcto');
+            
+            selectedRaw.classList.add('matched'); 
+            selectedProd.classList.add('matched');
+            selectedRaw.classList.remove('selected');
+            selectedProd.classList.remove('selected');
+            
+            totalMatches++;
+            updateProgress();
+            
+            // Verificar si nivel completado
+            const levelMatchCount = levelPairs[currentLevel - 1].length;
+            // Contar cuántos matched hay en el tablero actual
+            const matchedCount = document.querySelectorAll('.match-item.matched').length;
+
+            if (matchedCount === levelMatchCount * 2) { // *2 porque son pares (raw + prod)
+                if (currentLevel === 1) {
+                    // Pasar al nivel 2
+                    currentLevel = 2;
+                    setTimeout(() => {
+                        playSnd('completado');
+                        loadLevel();
+                    }, 800);
+                } else {
+                    // Juego terminado
+                    setTimeout(showFinal, 800);
+                }
+            }
+            
+            selectedRaw = null; 
+            selectedProd = null;
+
+        } else {
+            playSnd('error');
+            applyShake('matchBoard');
+            
+            const r = selectedRaw, p = selectedProd;
+            
+            // Quitamos selección tras breve momento
+            setTimeout(() => { 
+                r.classList.remove('selected'); 
+                p.classList.remove('selected'); 
+            }, 400);
+            
+            selectedRaw = null; 
+            selectedProd = null;
+        }
+    }
+
+    // --- Pantalla Final ---
+    function showFinal() {
+        clearInterval(timerInterval);
+        showScreen('finalScreen');
+        
+        // Cálculo de puntuación: (parejas_totales / intentos) * 100
+        let finalScore = 0;
+        if (totalAttempts > 0) {
+            finalScore = Math.round((totalMatches / totalAttempts) * 100);
+        }
+        finalScoreVal = finalScore;
+        
+        document.getElementById('finalScore').textContent = finalScore;
+        document.getElementById('totalTime').textContent = formatTime(totalElapsed);
+
+        if(finalScore === 100) {
+            document.getElementById('trophyBox').style.display = 'block';
+            document.getElementById('finalMsg').textContent = i18n[currentLang].msgPerfect;
+            playSnd('victoria');
+            createConfetti();
+        } else {
+            document.getElementById('trophyBox').style.display = 'none';
+            document.getElementById('finalMsg').textContent = i18n[currentLang].msgOther;
+            playSnd('completado');
+        }
+
+        showSubmitModal(totalElapsed / 1000);
+    }
+
+    // --- Hall of Fame ---
+    function loadHallOfFame(isRetry) {
+        if (isHofLoading) return;
+        isHofLoading = true;
+        const tableBody = document.getElementById('hofTableBody');
+        if (!isRetry) tableBody.innerHTML = '<tr><td colspan="4" class="hall-of-fame-loading">Cargando puntuaciones...</td></tr>';
+
+        const url = `${APP_SCRIPT_URL}?action=read&sheet=${SHEET_NAME}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+        fetch(url, { signal: controller.signal })
+            .then(r => {
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                return r.json();
+            })
+            .then(data => {
+                clearTimeout(timeoutId);
+                isHofLoading = false;
+                if (data.status === 'success' && data.data) {
+                    const processedData = data.data.map(row => {
+                        const getVal = keys => {
+                            for (const key of keys) {
+                                if (row[key] !== undefined && row[key] !== "") return row[key];
+                            }
+                            return null;
+                        };
+                        return {
+                            Nombre: getVal(["Nombre","nombre","name"]),
+                            Apellidos: getVal(["Apellidos","apellidos","surname"]),
+                            Puntuación: getVal(["Puntuación","puntuación","score"]),
+                            Tiempo: getVal(["Tiempo (s)","Tiempo","tiempo","time"])
+                        };
+                    });
+
+                    const validData = processedData.filter(row => row.Puntuación !== null && !isNaN(parseFloat(row.Puntuación)));
+
+                    if (validData.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="4" class="hall-of-fame-loading">¡Sé el primero en guardar tu puntuación!</td></tr>';
+                    } else {
+                        validData.sort((a, b) => {
+                            const sA = parseFloat(a.Puntuación) || 0;
+                            const sB = parseFloat(b.Puntuación) || 0;
+                            if (sB !== sA) return sB - sA;
+                            return (parseFloat(a.Tiempo) || 9999) - (parseFloat(b.Tiempo) || 9999);
+                        });
+                        tableBody.innerHTML = validData.slice(0, 10).map((row, i) => {
+                            const displayName = `${row.Nombre || ''} ${row.Apellidos || ''}`.trim();
+                            let timeStr = row.Tiempo;
+                            const tVal = parseFloat(row.Tiempo);
+                            if (!isNaN(tVal)) timeStr = formatTime(tVal * 1000);
+                            return `
+                                <tr>
+                                    <td>${i+1}º</td>
+                                    <td>${displayName}</td>
+                                    <td>${row.Puntuación || 0}</td>
+                                    <td>${timeStr}</td>
+                                </tr>
+                            `;
+                        }).join('');
+                    }
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="hall-of-fame-loading">¡Sé el primero en guardar tu puntuación!</td></tr>';
+                }
+            })
+            .catch(err => {
+                clearTimeout(timeoutId);
+                isHofLoading = false;
+                if (!isRetry) {
+                    setTimeout(() => loadHallOfFame(true), 500);
+                } else {
+                    console.error('Error cargando Hall of Fame:', err);
+                    tableBody.innerHTML = '<tr><td colspan="4" class="hall-of-fame-error">Error al cargar puntuaciones</td></tr>';
+                }
+            });
+    }
+
+    function showSubmitModal(timeSeconds) {
+        document.getElementById('modalTime').textContent = formatTime(timeSeconds * 1000);
+        document.getElementById('playerName').value = '';
+        document.getElementById('playerSurname').value = '';
+        document.getElementById('modalValidationMsg').classList.add('hidden');
+        document.getElementById('submitModal').classList.add('active');
+    }
+
+    function submitScore() {
+        if (isSubmittingScore) return;
+
+        const name = document.getElementById('playerName').value.trim();
+        const surname = document.getElementById('playerSurname').value.trim();
+        const score = finalScoreVal;
+        const time = Math.round((totalElapsed / 1000) * 100) / 100;
+        const validationMsg = document.getElementById('modalValidationMsg');
+
+        if (!name || !surname) {
+            validationMsg.textContent = i18n[currentLang].validationMsg;
+            validationMsg.classList.remove('hidden');
+            validationMsg.classList.remove('shake');
+            void validationMsg.offsetWidth;
+            validationMsg.classList.add('shake');
+            playSnd('error');
+            return;
+        }
+        validationMsg.classList.add('hidden');
+
+        isSubmittingScore = true;
+        const btn = document.getElementById('submitScoreBtn');
+        btn.textContent = 'Enviando...';
+        const payload = { sheet: SHEET_NAME, action: 'write', data: { score, time, name, surname } };
+
+        fetch(APP_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            setTimeout(() => {
+                document.getElementById('submitModal').classList.remove('active');
+                btn.textContent = 'Guardar';
+                isSubmittingScore = false;
+                loadHallOfFame();
+            }, 1500);
+        }).catch(e => {
+            console.log('Error:', e);
+            btn.textContent = 'Guardar';
+            isSubmittingScore = false;
+        });
+    }
+
+    function createConfetti() {
+        for(let i=0; i<100; i++){
+            setTimeout(() => {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.top = '-10px';
+                c.style.backgroundColor = ['#f59e42', '#2ecc71', '#254fba'][Math.floor(Math.random()*3)];
+                c.style.setProperty('--tx', (Math.random()-0.5) * 400 + 'px');
+                c.style.setProperty('--ty', window.innerHeight + 'px');
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 3000);
+            }, i * 30);
+        }
+    }
+
+    // --- Eventos ---
+    document.getElementById('startBtn').onclick = startGame;
+    
+    document.getElementById('restartBtn').onclick = () => {
+        playSnd('tap');
+        location.reload(); 
+    };
+    
+    document.getElementById('muteBtn').onclick = () => { 
+        isMuted = !isMuted; 
+        document.getElementById('muteBtn').textContent = isMuted ? '🔇' : '🔊'; 
+    };
+
+    document.getElementById('submitScoreBtn').addEventListener('click', submitScore);
+    document.getElementById('discardScoreBtn').addEventListener('click', () => {
+        playSnd('tap');
+        document.getElementById('submitModal').classList.remove('active');
+    });
+
+    document.getElementById('playerSurname').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('submitScoreBtn').click();
+    });
+    document.getElementById('playerName').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') document.getElementById('playerSurname').focus();
+    });
+
+    // --- Inicialización ---
+    window.addEventListener('load', () => {
+        loadHallOfFame();
+    });
+</script>
+</body>
+</html>

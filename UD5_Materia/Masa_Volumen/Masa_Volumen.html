@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>La materia y sus propiedades generales</title>
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/icono.ico">
+    <style>
+        /* ====== Reset & base ====== */
+        * { box-sizing: border-box; margin:0; padding:0; }
+        :root{
+            --blue:#001DFF;
+            --blue-dark:#04032B;
+            --blue-700:#1a3a5f;
+            --blue-600:#254fba;
+            --orange:#f59e42;
+            --orange-700:#e67e22;
+            --bg-grad-1:#1a3a5f;
+            --bg-grad-2:#0d2340;
+            --white:#ffffff;
+            --green:#2ecc71;
+            --red:#e74c3c;
+            --panel:#E8EAFF;
+        }
+        body{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+            min-height:100vh; display:flex; justify-content:center;
+            padding-top: 20px; padding-bottom:20px; color:#333; padding-left:10px; padding-right:10px;
+        }
+        .game-container{
+            background:var(--white); border-radius:16px; box-shadow:0 12px 24px rgba(0,0,0,.12);
+            padding:1.2rem; max-width:980px; width:100%; min-height:640px; position:relative; overflow:hidden;
+            display:flex; flex-direction:column; margin-top: 0;
+        }
+        header{ text-align:center; margin-bottom:.8rem; margin-top:1rem; }
+        h1{ color:var(--blue-dark); font-size:clamp(2rem,5.2vw,3.1rem); font-weight:900; letter-spacing:.5px; }
+        .subtitle{ color:var(--blue-700); font-size:clamp(1rem,3.5vw,1.25rem); margin-top:.25rem; }
+        .highlight-keyword{ color:var(--orange); font-weight:800; }
+
+        /* Buttons */
+        .btn{ color:#fff; border:none; padding:.75rem 1.2rem; border-radius:10px; cursor:pointer; font-weight:800;
+            transition:transform .08s ease, box-shadow .2s ease, background-color .25s ease; min-width:140px; height:48px;
+            display:inline-flex; align-items:center; justify-content:center; font-size: 1rem; }
+        .btn:hover{ transform:translateY(-2px); box-shadow:0 6px 14px rgba(0,0,0,.12); }
+        .btn:active{ transform:translateY(0); }
+        .btn-primary{ background:var(--orange); }
+        .btn-primary:hover{ background:var(--orange-700); color:#fff; }
+        .btn-blue{ background:var(--blue-600); }
+        .btn-blue:hover{ filter:brightness(.9); }
+        .btn-ghost{ background:#e6f2ff; color:var(--blue-700); }
+
+        .screen{ display:none; animation:fadeIn .35s ease; flex-direction: column; flex:1;}
+        .screen.active{ display:flex; }
+        @keyframes fadeIn{ from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:translateY(0);} }
+
+        .game-info{ display:flex; gap:.6rem; align-items:center; justify-content:space-between; margin:.4rem 0 1rem; flex-wrap:wrap; }
+        .timer{ font-weight:900; color:var(--blue-700); font-size:clamp(.95rem,2.3vw,1.15rem); }
+        .progress-bar{ flex:1; height:10px; background:#e6f2ff; border-radius:999px; overflow:hidden; }
+        .progress-fill{ height:100%; width:0%; background:linear-gradient(90deg, var(--orange) 0%, var(--orange-700) 100%); transition:width .3s ease; }
+
+        /* Pantalla Inicio Estética */
+        .start-content{ display:flex; flex-direction:column; justify-content:center; align-items:center; flex:1; gap:1rem; padding:1rem; }
+        .advice-box{ background:var(--panel); border-left:4px solid var(--blue-700); padding:1rem 1.2rem; border-radius:12px;
+            color:var(--blue-700); max-width:760px; text-align:center; font-size:clamp(1rem,3vw,1.15rem); }
+        .start-image{ max-width: 300px; width: 100%; margin: 0 auto; }
+
+        /* Controles superiores: idioma + silencio */
+        .top-controls{ position:absolute; top:.8rem; right:1rem; display:flex; align-items:center; gap:8px; z-index:20; }
+        .lang-pill{ display:flex; align-items:center; background:#fff; border-radius:999px; padding:3px; gap:3px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.12); border:1px solid #e0e0e0; }
+        .lang-pill button{ width:34px; height:34px; border-radius:50%; border:none; font-size:1.15rem; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; background:transparent;
+            transition:background .2s, opacity .2s, transform .15s; }
+        .lang-pill button.active-lang{ background:var(--blue-600); transform:scale(1.08); }
+        .lang-pill button:not(.active-lang){ opacity:.5; }
+        .lang-pill button:hover:not(.active-lang){ opacity:.8; transform:scale(1.05); }
+        .mute-btn{ background:var(--orange); color:#fff; border:2px solid #fff; width:38px; height:38px; border-radius:50%; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; }
+        .mute-btn:hover{ background:var(--orange-700); }
+
+        /* Pantalla Resumen (Estudio) - Títulos arriba */
+        .theory-box {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-left: 6px solid var(--blue);
+            color: #333;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+        
+        .theory-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .theory-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .theory-title {
+            color: var(--blue-dark);
+            font-weight: 800;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            display: block;
+            width: 100%;
+        }
+
+        .theory-highlight { color: var(--orange); font-weight: 700; }
+
+        /* --- JUEGO 1: COMPLETAR HUECOS --- */
+        .fill-game-container { display: flex; flex-direction: column; gap: 1rem; padding: 10px; }
+        
+        /* Banco de palabras */
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+            min-height: 50px;
+            padding: 0.5rem;
+            background: #f0f7ff;
+            border-radius: 8px;
+            border: 1px dashed #cbd5e0;
+        }
+        
+        .draggable-word {
+            background-color: var(--white);
+            border: 1px solid var(--blue-600);
+            color: var(--blue-700);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            cursor: grab;
+            user-select: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            touch-action: none;
+        }
+        .draggable-word:active { cursor: grabbing; transform: scale(1.05); }
+        .draggable-word.hidden { display: none; }
+        .draggable-word.selected { border-color: var(--orange); box-shadow: 0 0 0 2px var(--orange); }
+
+        /* Texto y Huecos */
+        .text-paragraph {
+            font-size: 1.1rem;
+            line-height: 2.2;
+            color: #333;
+            text-align: justify;
+            margin-bottom: 1rem;
+        }
+
+        .text-header {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--blue-dark);
+            margin-top: .2rem;
+            margin-bottom: .3rem;
+        }
+
+        .text-bullet {
+            font-size: 1.1rem;
+            line-height: 2.2;
+            color: #333;
+            margin-left: 1.8rem;
+            margin-bottom: .3rem;
+        }
+        
+        .dropzone {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            height: 34px;
+            border: 2px dashed #a0aec0;
+            background-color: #e6fffa;
+            border-radius: 6px;
+            margin: 0 4px;
+            vertical-align: middle;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .dropzone:hover { border-color: var(--orange); background-color: #fffaf0; }
+        .dropzone.filled { border-style: solid; border-color: var(--blue-600); background-color: var(--white); }
+        .dropzone.correct { border-color: var(--green); background-color: #d1fae5; color: var(--green); font-weight: bold; }
+        .dropzone.incorrect { border-color: var(--red); background-color: #fee2e2; color: var(--red); font-weight: bold; animation: shakeRed 0.4s ease-in-out; }
+
+        .placed-word {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--blue-700);
+            font-weight: 600;
+        }
+
+        @keyframes shakeRed {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+
+        /* --- JUEGO 2: MASA O VOLUMEN --- */
+        .quiz-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+        
+        .quiz-card {
+            background: var(--white);
+            border: 2px solid var(--blue-700);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+
+        .quiz-header-row{ display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:1.5rem; }
+        .quiz-text { font-size: 1.4rem; font-weight: 700; color: var(--blue-dark); margin-bottom: 0; }
+        .quiz-image { max-width: 220px; width: 100%; height: auto; max-height: 150px; object-fit: contain; border-radius: 8px; margin: 0 auto; display: block; }
+
+        .play-btn{ width:40px; height:40px; border-radius:50%; background-color:var(--blue-600); border:none; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; transition:transform .1s, background-color .2s; flex-shrink:0; }
+        .play-btn:hover{ background-color:var(--blue-dark); transform:scale(1.1); }
+        .play-btn:active{ transform:scale(0.95); }
+        .play-icon{ width:0; height:0; border-left:14px solid white; border-top:8px solid transparent; border-bottom:8px solid transparent; margin-left:3px; }
+
+        .quiz-options { display: flex; gap: 1rem; justify-content: center; width: 100%; }
+        
+        .quiz-btn {
+            flex: 1;
+            max-width: 200px;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 800;
+            transition: transform 0.1s, background-color 0.2s;
+            color: white;
+        }
+        .quiz-btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+        .btn-mass { background: var(--blue); }
+        .btn-mass:hover { background: var(--blue-dark); }
+        .btn-vol { background: var(--orange); }
+        .btn-vol:hover { background: var(--orange-700); }
+
+        /* Feedback visual en botones quiz */
+        .quiz-btn.correct-ans { background-color: var(--green) !important; transform: scale(1.05); }
+        .quiz-btn.wrong-ans { background-color: var(--red) !important; animation: shakeRed 0.4s ease-in-out; }
+
+        /* Pantalla Final */
+        .results{ display:flex; flex-direction:column; align-items:center; gap:.6rem; text-align:center; flex:1; justify-content:center;}
+        .final-title{ color:var(--blue-dark); font-weight:900; }
+        .big-score{ font-size:clamp(2.2rem,6vw,3.4rem); color:var(--blue-600); font-weight:900; }
+        .score-title{ font-size:1.0rem; color:var(--blue-700); margin-top:1rem; }
+        .final-time{ color:var(--blue-700); }
+        
+        /* TROFEO */
+        #trophyBox { 
+            display: none; 
+            font-size: clamp(4rem, 10vw, 7rem);
+            margin: .5rem 0;
+            text-align: center;
+            align-self: center;
+            animation: bounce 1s ease infinite;
+            color: var(--orange);
+            line-height: 1; 
+        }
+        
+        @keyframes bounce { 
+            0%,100%{ transform: translateY(0) scale(1); } 
+            50%{ transform: translateY(-15px) scale(1.1); } 
+        }
+        
+        .credit{ color:var(--blue-700); margin-top:1rem; }
+        
+        #finalMsg { font-size: clamp(1.2rem, 4.2vw, 1.8rem); font-weight: 800; color: var(--blue-700); margin-top: 0.6rem; }
+        
+        .school-logo { display: block; width: 160px; max-width: 28%; height: auto; margin-top: 0.8rem; border-radius: 8px; object-fit: contain; }
+        @media (max-width: 899px) { .school-logo { width: 140px; max-width: 160px; } }
+        @media (max-width: 420px) { .school-logo { width: 110px; max-width: 40%; margin-top: 0.6rem; } }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; z-index:1000; }
+        .modal-content { background:white; padding:2rem; border-radius:15px; width:90%; max-width:400px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.3); }
+        .modal-input { width:100%; padding:10px; margin:10px 0; border:2px solid #ddd; border-radius:8px; font-size:1rem; }
+        
+        .confetti{ position:fixed; width:10px; height:10px; border-radius:50%; animation: confetti-fall 3s linear forwards; z-index:999; }
+        @keyframes confetti-fall{ 0%{ transform:translate(0, -20px) rotate(0); opacity:1;} 100%{ transform:translate(var(--tx), var(--ty)) rotate(360deg); opacity:0; } }
+
+        /* --- ESTILOS DEL HALL OF FAME --- */
+        .hall-of-fame {
+            background: var(--panel);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .hall-of-fame-title {
+            color: var(--blue-700);
+            font-weight: 800;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .hall-of-fame-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .hall-of-fame-table th {
+            background: var(--blue-600);
+            color: white;
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .hall-of-fame-table td {
+            padding: 0.4rem 0.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .hall-of-fame-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .hall-of-fame-table tr:nth-child(even) {
+            background-color: rgba(255, 255,255, 0.5);
+        }
+
+        .hall-of-fame-error, .hall-of-fame-loading {
+            padding: 1rem;
+            text-align: center;
+            color: var(--blue-700);
+            font-style: italic;
+        }
+
+        .hall-of-fame-error {
+            color: var(--red);
+        }
+
+        .game-controls { display:flex; gap:10px; justify-content:center; margin-top:1rem; min-height: 48px;}
+        .hidden { display: none !important; }
+        
+        .level-indicator { font-weight: 900; color: var(--blue-700); }
+
+        @media (max-width:899px){ header{ margin-top:1.6rem; } }
+        @media (max-width:420px){ .btn{ min-width:110px; padding:.6rem .9rem; height:44px; } }
+
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <div class="top-controls">
+        <div class="lang-pill">
+            <button class="lang-flag-btn active-lang" data-lang="es" title="Español">🇪🇸</button>
+            <button class="lang-flag-btn" data-lang="en" title="English">🇬🇧</button>
+        </div>
+        <button class="mute-btn" id="muteBtn" title="Silenciar/Activar sonido">🔊</button>
+    </div>
+
+    <!-- Pantalla de Inicio -->
+    <section class="screen active" id="startScreen">
+        <header>
+            <h1 id="startTitle">La materia: propiedades generales</h1>
+            <div class="subtitle" id="startSubtitle">La materia y sus propiedades generales: <span class="highlight-keyword">masa</span> y <span class="highlight-keyword">volumen</span></div>
+        </header>
+
+        <div class="start-content">
+            <div class="advice-box">
+                <span class="advice-text" id="startAdvice">Demuestra lo que sabes sobre la materia y sus propiedades generales de <span class="highlight-keyword">masa</span> y <span class="highlight-keyword">volumen</span>.
+                <strong style="display:block; margin-top:0.5rem; text-align:center;">¡Ánimo!</strong></span>
+            </div>
+            
+            <button class="btn btn-primary" id="playBtn">Comenzar</button>
+            
+            <img class="start-image" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png" alt="Niños aprendiendo">
+            
+            <div class="hall-of-fame" id="hallOfFame">
+              <div class="hall-of-fame-title">🏆 <span id="hofTitle">Mejores puntuaciones</span> 🏆</div>
+              <table class="hall-of-fame-table">
+                  <thead>
+                        <tr>
+                            <th id="hofPos">Posición</th>
+                            <th id="hofName">Nombre</th>
+                            <th id="hofPoints">Puntos</th>
+                            <th id="hofTime">Tiempo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hofTableBody">
+                      </tbody>
+              </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pantalla Resumen -->
+    <section class="screen" id="summaryScreen">
+        <header>
+            <h1 id="summaryTitle">La materia y sus propiedades generales</h1>
+        </header>
+        <div class="theory-box">
+            <div class="theory-item">
+                <span class="theory-title" id="theoryTitle1">La materia</span>
+                <div id="theoryBody1">
+                    <p>La materia es de lo que están hechas las <span class="theory-highlight">cosas</span>.</p>
+                    <p>Toda materia pesa (tiene <span class="theory-highlight">masa</span>) y ocupa un espacio (tiene <span class="theory-highlight">volumen</span>).</p>
+                </div>
+            </div>
+            <div class="theory-item">
+                <span class="theory-title" id="theoryTitle2">La masa:</span>
+                <div id="theoryBody2">
+                    <p>• Se mide con <span class="theory-highlight">básculas o balanzas</span>.</p>
+                    <p>• Se expresa en <span class="theory-highlight">kilogramos</span> (kg) o en <span class="theory-highlight">gramos</span> (g).</p>
+                </div>
+            </div>
+            <div class="theory-item">
+                <span class="theory-title" id="theoryTitle3">El Volumen:</span>
+                <div id="theoryBody3">
+                    <p>• Se mide con <span class="theory-highlight">vasos graduados</span>.</p>
+                    <p>• Se expresa en <span class="theory-highlight">litros</span>.</p>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center;">
+            <button class="btn btn-primary" id="startGameBtn">Jugar</button>
+        </div>
+    </section>
+
+    <!-- Pantalla Juego 1 -->
+    <section class="screen" id="game1Screen">
+        <header>
+            <h1 id="game1Title">La materia y sus propiedades generales: masa y volumen</h1>
+            <div class="subtitle" id="game1Subtitle">Rellena los huecos para completar el texto</div>
+        </header>
+        <div class="game-info">
+            <div class="timer" id="timerGame1">00:00.0</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFillGame1"></div></div>
+        </div>
+        <div class="fill-game-container">
+            <div class="word-bank" id="wordBank"></div>
+            <div id="textContainer"></div>
+            <div class="game-controls">
+                <button class="btn btn-primary" id="checkGame1Btn">Comprobar</button>
+                <button class="btn btn-blue hidden" id="continueFromGame1Btn">Continuar</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pantalla Juego 2 -->
+    <section class="screen" id="game2Screen">
+        <header>
+            <h1 id="game2Title">¿Masa o volumen?</h1>
+        </header>
+        <div class="game-info">
+            <div class="level-indicator" id="levelIndicator">Nivel 1/8</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFillGame2"></div></div>
+            <div class="timer" id="timerGame2">00:00.0</div>
+        </div>
+        
+        <div class="quiz-container">
+            <div class="quiz-card" id="quizCard">
+                <div class="quiz-header-row">
+                    <div id="quizContent" class="quiz-text"></div>
+                    <button class="play-btn" id="playQuizBtn" title="Escuchar">
+                        <div class="play-icon"></div>
+                    </button>
+                </div>
+                <img id="quizImage" class="quiz-image hidden" src="" alt="Referencia">
+            </div>
+            
+            <div class="quiz-options">
+                <button class="quiz-btn btn-mass" id="btnMasa">Masa</button>
+                <button class="quiz-btn btn-vol" id="btnVolumen">Volumen</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pantalla Final -->
+    <section class="screen" id="finalScreen">
+        <header>
+            <h1 class="final-title" id="finalTitle">La materia y sus propiedades: masa y volumen</h1>
+        </header>
+        <div class="results">
+            <div id="trophyBox">🏆</div>
+            
+            <div class="score-title" id="scoreLabel">Puntuación:</div>
+            <div class="big-score" id="finalScore">0</div>
+            <div class="final-time"><span id="timeLabel">Tiempo:</span> <span id="finalTime">00:00.0</span></div>
+            <div id="finalMsg" class="subtitle"></div>
+            <button class="btn btn-primary" id="backToMenuBtn" style="background:var(--orange);">Volver al menú</button>
+            <span class="credit">Creado por Manuel J. Ventura</span>
+            <img class="school-logo" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Siurot.png" alt="Logo del colegio" />
+        </div>
+    </section>
+</div>
+
+<div id="submitModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3 id="modalTitle">¡Juego Terminado!</h3>
+        <p><span id="modalTimeLabel">Tu tiempo:</span> <span id="modalTime">00:00.0</span></p>
+        <input type="text" id="playerName" class="modal-input" placeholder="Nombre" maxlength="15">
+        <input type="text" id="playerSurname" class="modal-input" placeholder="Apellido" maxlength="20">
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button id="submitScoreBtn" class="btn btn-primary">Guardar</button>
+            <button id="discardScoreBtn" class="btn btn-ghost">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* --- 1. CONFIGURACIÓN DE VARIABLES GLOBALES (CRÍTICO) --- */
+    const SHEET_NAME = "Masa_Volumen2";
+    const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxUf-hXwjEkLUjzpOWBo0y88IcX_9wASGLiJfZSKR9494UsBQlrPn0Wd-D6VYnyXZSO/exec";
+    
+    let soundEnabled = true;
+    let audioUnlocked = false;
+    let isMuted = false;
+    let currentLang = 'es';
+    let currentScreen = 'startScreen';
+
+    // Variables GLOBALES de tiempo y juego
+    let startTime = 0;
+    let timerInterval = null;
+    let elapsed = 0;
+    let timerStopped = false; 
+    
+    let finalScoreVal = 0; 
+    let finalTimeVal = 0; 
+    
+    // ORDEN FIJO DE JUEGOS: 1, 2
+    let gameFlowOrder = ['game1', 'game2']; 
+    let currentGameStep = 0;
+
+    // Acumuladores de aciertos
+    let totalCorrectG1 = 0;
+    let totalCorrectG2 = 0;
+    const TOTAL_QUESTIONS_G1 = 6;
+    const TOTAL_QUESTIONS_G2 = 8;
+    const GRAND_TOTAL_QUESTIONS = TOTAL_QUESTIONS_G1 + TOTAL_QUESTIONS_G2;
+
+    /* ====================================================
+       i18n TEXTOS DE INTERFAZ
+    ===================================================== */
+    const i18n = {
+        es: {
+            startTitle: 'La materia: propiedades generales',
+            startSubtitle: 'La materia y sus propiedades generales: <span class="highlight-keyword">masa</span> y <span class="highlight-keyword">volumen</span>',
+            startAdvice: 'Demuestra lo que sabes sobre la materia y sus propiedades generales de <span class="highlight-keyword">masa</span> y <span class="highlight-keyword">volumen</span>.<strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong>',
+            startBtn: 'Comenzar',
+            hofTitle: 'Mejores puntuaciones',
+            hofPos: 'Posición', hofName: 'Nombre', hofPoints: 'Puntos', hofTime: 'Tiempo',
+            summaryTitle: 'La materia y sus propiedades generales',
+            theoryTitle1: 'La materia',
+            theoryBody1: '<p>La materia es de lo que están hechas las <span class="theory-highlight">cosas</span>.</p><p>Toda materia pesa (tiene <span class="theory-highlight">masa</span>) y ocupa un espacio (tiene <span class="theory-highlight">volumen</span>).</p>',
+            theoryTitle2: 'La masa:',
+            theoryBody2: '<p>• Se mide con <span class="theory-highlight">básculas o balanzas</span>.</p><p>• Se expresa en <span class="theory-highlight">kilogramos</span> (kg) o en <span class="theory-highlight">gramos</span> (g).</p>',
+            theoryTitle3: 'El Volumen:',
+            theoryBody3: '<p>• Se mide con <span class="theory-highlight">vasos graduados</span>.</p><p>• Se expresa en <span class="theory-highlight">litros</span>.</p>',
+            startGameBtn: 'Jugar',
+            game1Title: 'La materia y sus propiedades generales: masa y volumen',
+            game1Subtitle: 'Rellena los huecos para completar el texto',
+            checkBtn: 'Comprobar',
+            continueBtn: 'Continuar',
+            game2Title: '¿Masa o volumen?',
+            levelWord: 'Nivel',
+            btnMasa: 'Masa',
+            btnVolumen: 'Volumen',
+            finalTitle: 'La materia y sus propiedades: masa y volumen',
+            scoreLabel: 'Puntuación:',
+            timeLabel: 'Tiempo:',
+            backBtn: 'Volver al menú',
+            modalTitle: '¡Juego Terminado!',
+            modalTimeLabel: 'Tu tiempo:',
+            modalSave: 'Guardar',
+            modalCancel: 'Cancelar',
+            namePlaceholder: 'Nombre',
+            surnamePlaceholder: 'Apellido',
+            validationMsg: 'Por favor, rellena nombre y apellido',
+            msgPerfect: '¡Enhorabuena, puntuación máxima!',
+            msgOther: '¡Buen trabajo! Sigue practicando'
+        },
+        en: {
+            startTitle: 'Matter: general properties',
+            startSubtitle: 'Matter and its general properties: <span class="highlight-keyword">mass</span> and <span class="highlight-keyword">volume</span>',
+            startAdvice: 'Show what you know about matter and its general properties of <span class="highlight-keyword">mass</span> and <span class="highlight-keyword">volume</span>.<strong style="display:block;margin-top:.5rem;text-align:center;">Good luck!</strong>',
+            startBtn: 'Start',
+            hofTitle: 'Best scores',
+            hofPos: 'Position', hofName: 'Name', hofPoints: 'Points', hofTime: 'Time',
+            summaryTitle: 'Matter and its general properties',
+            theoryTitle1: 'Matter',
+            theoryBody1: '<p>Matter is what <span class="theory-highlight">things</span> are made of.</p><p>All matter has weight (it has <span class="theory-highlight">mass</span>) and takes up space (it has <span class="theory-highlight">volume</span>).</p>',
+            theoryTitle2: 'Mass:',
+            theoryBody2: '<p>• It is measured with <span class="theory-highlight">scales or balances</span>.</p><p>• It is expressed in <span class="theory-highlight">kilograms</span> (kg) or <span class="theory-highlight">grams</span> (g).</p>',
+            theoryTitle3: 'Volume:',
+            theoryBody3: '<p>• It is measured with <span class="theory-highlight">graduated containers</span>.</p><p>• It is expressed in <span class="theory-highlight">litres</span>.</p>',
+            startGameBtn: 'Play',
+            game1Title: 'Matter and its general properties: mass and volume',
+            game1Subtitle: 'Fill in the blanks to complete the text',
+            checkBtn: 'Check',
+            continueBtn: 'Continue',
+            game2Title: 'Mass or volume?',
+            levelWord: 'Level',
+            btnMasa: 'Mass',
+            btnVolumen: 'Volume',
+            finalTitle: 'Matter and its properties: mass and volume',
+            scoreLabel: 'Score:',
+            timeLabel: 'Time:',
+            backBtn: 'Back to menu',
+            modalTitle: 'Game Over!',
+            modalTimeLabel: 'Your time:',
+            modalSave: 'Save',
+            modalCancel: 'Cancel',
+            namePlaceholder: 'Name',
+            surnamePlaceholder: 'Surname',
+            validationMsg: 'Please fill in name and surname',
+            msgPerfect: 'Congratulations, top score!',
+            msgOther: 'Good work! Keep practising'
+        }
+    };
+
+    /* --- AUDIOS --- */
+    const audioUrls = {
+        correct: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Correcto.mp3',
+        error: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Error.mp3',
+        tap: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Tap.mp3',
+        victory: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Termin%C3%A9.mp3',
+        completed: 'https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Completado.mp3'
+    };
+    
+    const audioObjects = {};
+    Object.keys(audioUrls).forEach(key => { 
+        const a = new Audio();
+        a.src = audioUrls[key];
+        a.preload = 'auto';
+        audioObjects[key] = a; 
+    });
+
+    function unlockAudio() {
+        if (audioUnlocked) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator(); const g = ctx.createGain();
+            osc.connect(g); g.connect(ctx.destination); g.gain.value = 0.001;
+            osc.start(); osc.stop(ctx.currentTime + 0.01);
+            audioUnlocked = true;
+            isMuted = false;
+        } catch(e) { audioUnlocked = true; }
+    }
+
+    function reproducirSonidoTap() {
+        if (isMuted) return;
+        if (!audioUnlocked) unlockAudio();
+        const a = audioObjects['tap'];
+        if(!a) return;
+        try { a.currentTime = 0; a.play(); } catch(e){}
+    }
+
+    function reproducirSonidoCorrecto() {
+        if (isMuted) return;
+        if (!audioUnlocked) unlockAudio();
+        const a = audioObjects['correct'];
+        if(!a) return;
+        try { a.currentTime = 0; a.play(); } catch(e){}
+    }
+
+    function reproducirSonidoError() {
+        if (isMuted) return;
+        if (!audioUnlocked) unlockAudio();
+        const a = audioObjects['error'];
+        if(!a) return;
+        try { a.currentTime = 0; a.play(); } catch(e){}
+    }
+
+    function reproducirSonidoVictoria() {
+        if (isMuted) return;
+        if (!audioUnlocked) unlockAudio();
+        const a = audioObjects['victory'];
+        if(!a) return;
+        try { a.currentTime = 0; a.play(); } catch(e){}
+    }
+
+    function reproducirSonidoCompletado() {
+        if (isMuted) return;
+        if (!audioUnlocked) unlockAudio();
+        const a = audioObjects['completed'];
+        if(!a) return;
+        try { a.currentTime = 0; a.play(); } catch(e){}
+    }
+
+    function toggleSound() {
+        isMuted = !isMuted;
+        document.getElementById('muteBtn').textContent = isMuted ? '🔇' : '🔊';
+        if (isMuted) safeCancelSpeech();
+    }
+
+    /* --- SÍNTESIS DE VOZ (TTS) --- */
+    let voicesLoaded = false;
+
+    function safeCancelSpeech() {
+        try { window.speechSynthesis.cancel(); } catch(e) {}
+    }
+
+    function loadVoicesTTS() {
+        try { if (speechSynthesis.getVoices().length > 0) voicesLoaded = true; } catch(e) {}
+    }
+    if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = loadVoicesTTS;
+    }
+    loadVoicesTTS();
+
+    function forceInitTTS() {
+        if (!voicesLoaded) {
+            try {
+                const u = new SpeechSynthesisUtterance('');
+                speechSynthesis.speak(u);
+            } catch(e) {}
+        }
+    }
+
+    function getBestVoice(lang) {
+        let voices = [];
+        try { voices = speechSynthesis.getVoices(); } catch(e) { return null; }
+        if (!voices.length) return null;
+        const prefer = lang === 'es' ? ['Google español', 'Microsoft', 'Natural'] : ['Google UK', 'Microsoft', 'Natural'];
+        for (const p of prefer) {
+            const found = voices.find(v => v.name.includes(p) && v.lang.startsWith(lang));
+            if (found) return found;
+        }
+        return voices.find(v => v.lang.startsWith(lang)) || voices[0];
+    }
+
+    function speakText(text) {
+        if (isMuted) return;
+        safeCancelSpeech();
+        try {
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = currentLang === 'es' ? 'es-ES' : 'en-GB';
+            u.voice = getBestVoice(currentLang);
+            u.rate = 0.9;
+            u.pitch = 1;
+            speechSynthesis.speak(u);
+        } catch(e) {}
+    }
+
+    /* --- SELECTOR DE IDIOMA --- */
+    document.querySelectorAll('.lang-flag-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.classList.contains('active-lang')) return;
+            document.querySelectorAll('.lang-flag-btn').forEach(b => b.classList.remove('active-lang'));
+            btn.classList.add('active-lang');
+            currentLang = btn.dataset.lang;
+            document.documentElement.lang = currentLang;
+            applyLanguage(currentLang);
+        });
+    });
+
+    function applyLanguage(lang) {
+        safeCancelSpeech();
+        const t = i18n[lang];
+
+        document.getElementById('startTitle').innerHTML = t.startTitle;
+        document.getElementById('startSubtitle').innerHTML = t.startSubtitle;
+        document.getElementById('startAdvice').innerHTML = t.startAdvice;
+        document.getElementById('playBtn').innerHTML = t.startBtn;
+        document.getElementById('hofTitle').innerHTML = t.hofTitle;
+        document.getElementById('hofPos').innerHTML = t.hofPos;
+        document.getElementById('hofName').innerHTML = t.hofName;
+        document.getElementById('hofPoints').innerHTML = t.hofPoints;
+        document.getElementById('hofTime').innerHTML = t.hofTime;
+
+        document.getElementById('summaryTitle').innerHTML = t.summaryTitle;
+        document.getElementById('theoryTitle1').innerHTML = t.theoryTitle1;
+        document.getElementById('theoryBody1').innerHTML = t.theoryBody1;
+        document.getElementById('theoryTitle2').innerHTML = t.theoryTitle2;
+        document.getElementById('theoryBody2').innerHTML = t.theoryBody2;
+        document.getElementById('theoryTitle3').innerHTML = t.theoryTitle3;
+        document.getElementById('theoryBody3').innerHTML = t.theoryBody3;
+        document.getElementById('startGameBtn').innerHTML = t.startGameBtn;
+
+        document.getElementById('game1Title').innerHTML = t.game1Title;
+        document.getElementById('game1Subtitle').innerHTML = t.game1Subtitle;
+        document.getElementById('checkGame1Btn').innerHTML = t.checkBtn;
+        document.getElementById('continueFromGame1Btn').innerHTML = t.continueBtn;
+
+        document.getElementById('game2Title').innerHTML = t.game2Title;
+        document.getElementById('btnMasa').innerHTML = t.btnMasa;
+        document.getElementById('btnVolumen').innerHTML = t.btnVolumen;
+
+        document.getElementById('finalTitle').innerHTML = t.finalTitle;
+        document.getElementById('scoreLabel').innerHTML = t.scoreLabel;
+        document.getElementById('timeLabel').innerHTML = t.timeLabel;
+        document.getElementById('backToMenuBtn').innerHTML = t.backBtn;
+
+        document.getElementById('modalTitle').innerHTML = t.modalTitle;
+        document.getElementById('modalTimeLabel').innerHTML = t.modalTimeLabel;
+        document.getElementById('submitScoreBtn').innerHTML = t.modalSave;
+        document.getElementById('discardScoreBtn').innerHTML = t.modalCancel;
+        document.getElementById('playerName').placeholder = t.namePlaceholder;
+        document.getElementById('playerSurname').placeholder = t.surnamePlaceholder;
+
+        // Re-render de contenido dinámico según la pantalla activa
+        if (currentScreen === 'game1Screen') {
+            initGame1(); // Se reconstruye en el nuevo idioma (reinicia el ejercicio)
+        } else if (currentScreen === 'game2Screen') {
+            renderCurrentQuestionG2(true);
+        } else if (currentScreen === 'finalScreen') {
+            document.getElementById('finalMsg').textContent = finalScoreVal === 100 ? t.msgPerfect : t.msgOther;
+        }
+
+        updateLevelIndicatorG2();
+    }
+
+    /* --- LÓGICA GENERAL --- */
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        currentScreen = id;
+    }
+
+    function startGlobalTimer() {
+        if (timerInterval) return; 
+        
+        if (!timerStopped) {
+            startTime = Date.now();
+            elapsed = 0;
+        } else {
+            startTime = Date.now() - (elapsed * 1000);
+            timerStopped = false;
+        }
+
+        timerInterval = setInterval(() => {
+            const now = Date.now();
+            const delta = (now - startTime) / 1000;
+            elapsed = delta;
+            updateTimerDisplay(elapsed);
+        }, 100);
+    }
+
+    function stopTimerForCheck() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerStopped = true;
+        }
+    }
+
+    function updateTimerDisplay(sec) {
+        const m = Math.floor(sec / 60).toString().padStart(2, '0');
+        const s = Math.floor(sec % 60).toString().padStart(2, '0');
+        const ms = Math.round((sec % 1) * 10);
+        const timeStr = `${m}:${s}.${ms}`;
+        
+        ['timerGame1','timerGame2'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.textContent = timeStr;
+        });
+    }
+
+    function formatTime(sec) {
+        const m = Math.floor(sec / 60).toString().padStart(2, '0');
+        const s = Math.floor(sec % 60).toString().padStart(2, '0');
+        const ms = Math.round((sec % 1) * 10);
+        return `${m}:${s}.${ms}`;
+    }
+
+    function updateProgress(id, pct) {
+        const el = document.getElementById(id);
+        if(el) el.style.width = pct + '%';
+    }
+
+    /* --- LÓGICA DE FLUJO DE JUEGOS --- */
+    function initGameSequence() {
+        currentGameStep = 0;
+        totalCorrectG1 = 0;
+        totalCorrectG2 = 0;
+        
+        startGlobalTimer();
+        loadNextGame();
+    }
+
+    function loadNextGame() {
+        const gameType = gameFlowOrder[currentGameStep];
+        
+        if (gameType === 'game1') {
+            initGame1();
+            showScreen('game1Screen');
+        } else if (gameType === 'game2') {
+            initGame2();
+            showScreen('game2Screen');
+        }
+    }
+
+    function advanceGameSequence() {
+        currentGameStep++;
+        if (currentGameStep < gameFlowOrder.length) {
+            loadNextGame();
+        } else {
+            finishGame();
+        }
+    }
+
+    /* --- JUEGO 1: COMPLETAR HUECOS --- */
+    const g1FullText = {
+        es: [
+            { type: 'intro', text: "La materia es de lo que están hechas las {cosas}. Tiene masa y {volumen}." },
+            { type: 'header', text: "La masa:" },
+            { type: 'bullet', text: "• Se mide con {básculas o balanzas}" },
+            { type: 'bullet', text: "• Se expresa en {kilogramos}" },
+            { type: 'header', text: "El Volumen:" },
+            { type: 'bullet', text: "• Se mide con {vasos graduados}" },
+            { type: 'bullet', text: "• Se expresa en {litros}" }
+        ],
+        en: [
+            { type: 'intro', text: "Matter is what {things} are made of. It has mass and {volume}." },
+            { type: 'header', text: "Mass:" },
+            { type: 'bullet', text: "• It is measured with {scales or balances}" },
+            { type: 'bullet', text: "• It is expressed in {kilograms}" },
+            { type: 'header', text: "Volume:" },
+            { type: 'bullet', text: "• It is measured with {graduated containers}" },
+            { type: 'bullet', text: "• It is expressed in {litres}" }
+        ]
+    };
+    const g1Answers = {
+        es: ["cosas", "volumen", "básculas o balanzas", "kilogramos", "vasos graduados", "litros"],
+        en: ["things", "volume", "scales or balances", "kilograms", "graduated containers", "litres"]
+    };
+    
+    let selectedWordBankItem = null;
+    let g1BlankOrder = []; // orden de índices del banco de palabras (se conserva al cambiar de idioma)
+
+    function initGame1() {
+        const bank = document.getElementById('wordBank');
+        const container = document.getElementById('textContainer');
+        const checkBtn = document.getElementById('checkGame1Btn');
+        const contBtn = document.getElementById('continueFromGame1Btn');
+        
+        bank.innerHTML = '';
+        container.innerHTML = '';
+        checkBtn.classList.remove('hidden');
+        contBtn.classList.add('hidden');
+        totalCorrectG1 = 0;
+
+        const answers = g1Answers[currentLang];
+
+        // Si no hay un orden barajado ya guardado (primera vez), lo generamos
+        if (g1BlankOrder.length !== answers.length) {
+            g1BlankOrder = answers.map((_, idx) => idx);
+            g1BlankOrder.sort(() => Math.random() - 0.5);
+        }
+
+        g1BlankOrder.forEach(idx => {
+            const word = answers[idx];
+            const el = document.createElement('div');
+            el.className = 'draggable-word';
+            el.textContent = word;
+            el.draggable = true;
+            el.dataset.word = word;
+            
+            el.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', word);
+                e.dataTransfer.effectAllowed = 'copyMove';
+                selectWordForTap(el);
+            });
+            el.addEventListener('click', () => selectWordForTap(el));
+            bank.appendChild(el);
+        });
+
+        let html = '';
+        g1FullText[currentLang].forEach(line => {
+            const processedText = line.text.replace(/{(.*?)}/g, (match, captured) => {
+                return `<span class="dropzone" data-answer="${captured}"></span>`;
+            });
+            const cls = line.type === 'header' ? 'text-header' : (line.type === 'bullet' ? 'text-bullet' : 'text-paragraph');
+            html += `<p class="${cls}">${processedText}</p>`;
+        });
+        container.innerHTML = html;
+
+        document.querySelectorAll('.dropzone').forEach(dz => {
+            dz.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+            });
+            dz.addEventListener('drop', handleDrop);
+            dz.addEventListener('click', handleDropzoneClick);
+        });
+        
+        updateProgress('progressFillGame1', 0);
+    }
+
+    function selectWordForTap(el) {
+        if(el.classList.contains('hidden')) return;
+        document.querySelectorAll('.draggable-word').forEach(w => {
+            w.classList.remove('selected');
+            w.style.borderColor = 'var(--blue-600)';
+        });
+        selectedWordBankItem = el;
+        el.classList.add('selected');
+        el.style.borderColor = 'var(--orange)';
+        reproducirSonidoTap();
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        let word = e.dataTransfer.getData('text/plain');
+        if (!word && selectedWordBankItem) {
+            word = selectedWordBankItem.dataset.word;
+        }
+        
+        if (word) {
+            placeWordInDropzone(this, word);
+        }
+        
+        document.querySelectorAll('.draggable-word').forEach(w => {
+            w.classList.remove('selected');
+            w.style.borderColor = 'var(--blue-600)';
+        });
+        selectedWordBankItem = null;
+    }
+
+    function handleDropzoneClick() {
+        if (selectedWordBankItem) {
+            placeWordInDropzone(this, selectedWordBankItem.dataset.word);
+            document.querySelectorAll('.draggable-word').forEach(w => {
+                w.classList.remove('selected');
+                w.style.borderColor = 'var(--blue-600)';
+            });
+            selectedWordBankItem = null;
+        }
+    }
+
+    function placeWordInDropzone(dz, word) {
+        if (dz.hasChildNodes()) return; 
+
+        const bankItem = Array.from(document.querySelectorAll('.draggable-word')).find(el => el.dataset.word === word && !el.classList.contains('hidden'));
+        if (bankItem) bankItem.classList.add('hidden');
+
+        const span = document.createElement('span');
+        span.className = 'placed-word';
+        span.textContent = word;
+        span.dataset.word = word;
+        span.onclick = (e) => {
+            e.stopPropagation(); 
+            returnWordToBank(word);
+            dz.innerHTML = '';
+            dz.classList.remove('filled');
+            reproducirSonidoTap();
+        };
+
+        dz.innerHTML = '';
+        dz.appendChild(span);
+        dz.classList.add('filled');
+        reproducirSonidoTap();
+    }
+
+    function returnWordToBank(word) {
+        const bankItem = Array.from(document.querySelectorAll('.draggable-word')).find(el => el.dataset.word === word);
+        if (bankItem) bankItem.classList.remove('hidden');
+    }
+
+    document.getElementById('checkGame1Btn').onclick = () => {
+        stopTimerForCheck();
+        let correctCount = 0;
+        const zones = document.querySelectorAll('.dropzone');
+        
+        zones.forEach(z => {
+            const placed = z.querySelector('.placed-word');
+            const expected = z.dataset.answer;
+            
+            z.classList.remove('correct', 'incorrect');
+            
+            if (placed && placed.dataset.word === expected) {
+                z.classList.add('correct');
+                correctCount++;
+            } else {
+                z.classList.add('incorrect');
+            }
+        });
+
+        totalCorrectG1 = correctCount;
+        
+        document.getElementById('checkGame1Btn').classList.add('hidden');
+        document.getElementById('continueFromGame1Btn').classList.remove('hidden');
+
+        // Progreso G1
+        const pct = (correctCount / TOTAL_QUESTIONS_G1) * 100;
+        updateProgress('progressFillGame1', pct);
+
+        if (correctCount === TOTAL_QUESTIONS_G1) reproducirSonidoCorrecto();
+        else reproducirSonidoError();
+    };
+
+    document.getElementById('continueFromGame1Btn').onclick = () => {
+        startGlobalTimer();
+        advanceGameSequence();
+    };
+
+    /* --- JUEGO 2: MASA O VOLUMEN --- */
+    const g2Data = {
+        es: [
+            { type: 'masa', text: 'Está relacionado con el peso', img: null },
+            { type: 'masa', text: 'Se calcula con básculas o balanzas', img: null },
+            { type: 'masa', text: 'Se expresa en kilogramos', img: null },
+            { type: 'masa', text: '¿Qué medimos con este instrumento?', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Materia_Eergia/bascula.png' },
+            { type: 'volumen', text: 'Espacio que ocupa un objeto', img: null },
+            { type: 'volumen', text: 'Se calcula con recipientes graduados', img: null },
+            { type: 'volumen', text: 'Se expresa en litros', img: null },
+            { type: 'volumen', text: '¿Qué medimos con este instrumento?', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Materia_Eergia/recipientes.png' }
+        ],
+        en: [
+            { type: 'masa', text: 'It is related to weight', img: null },
+            { type: 'masa', text: 'It is calculated with scales or balances', img: null },
+            { type: 'masa', text: 'It is expressed in kilograms', img: null },
+            { type: 'masa', text: 'What do we measure with this instrument?', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Materia_Eergia/bascula.png' },
+            { type: 'volumen', text: 'Space that an object occupies', img: null },
+            { type: 'volumen', text: 'It is calculated with graduated containers', img: null },
+            { type: 'volumen', text: 'It is expressed in litres', img: null },
+            { type: 'volumen', text: 'What do we measure with this instrument?', img: 'https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/C_MEDIO3/Materia_Eergia/recipientes.png' }
+        ]
+    };
+
+    let g2CurrentIndex = 0;
+    let g2QuestionOrder = []; // orden de índices (se conserva al cambiar de idioma)
+    let g2CurrentQuestionErred = false; // true si ya ha fallado esta pregunta (no cuenta como acierto al reintentar)
+
+    function initGame2() {
+        const total = g2Data[currentLang].length;
+        g2QuestionOrder = Array.from({length: total}, (_, i) => i);
+        g2QuestionOrder.sort(() => Math.random() - 0.5);
+        g2CurrentIndex = 0;
+        totalCorrectG2 = 0;
+        g2CurrentQuestionErred = false;
+        updateProgress('progressFillGame2', 0);
+        renderCurrentQuestionG2(false);
+    }
+
+    function updateLevelIndicatorG2() {
+        const levelEl = document.getElementById('levelIndicator');
+        if (!levelEl || !g2QuestionOrder.length) return;
+        const t = i18n[currentLang];
+        levelEl.textContent = `${t.levelWord} ${Math.min(g2CurrentIndex + 1, g2QuestionOrder.length)}/${g2QuestionOrder.length}`;
+    }
+
+    function renderCurrentQuestionG2(isLangSwitch) {
+        if (g2CurrentIndex >= g2QuestionOrder.length) {
+            if (!isLangSwitch) advanceGameSequence();
+            return;
+        }
+
+        const dataIdx = g2QuestionOrder[g2CurrentIndex];
+        const q = g2Data[currentLang][dataIdx];
+        const txtEl = document.getElementById('quizContent');
+        const imgEl = document.getElementById('quizImage');
+
+        txtEl.textContent = q.text;
+        
+        if (q.img) {
+            imgEl.src = q.img;
+            imgEl.classList.remove('hidden');
+        } else {
+            imgEl.classList.add('hidden');
+        }
+
+        updateLevelIndicatorG2();
+        
+        // Reset botones
+        const btnMasa = document.getElementById('btnMasa');
+        const btnVol = document.getElementById('btnVolumen');
+        btnMasa.className = 'quiz-btn btn-mass';
+        btnVol.className = 'quiz-btn btn-vol';
+        btnMasa.disabled = false;
+        btnVol.disabled = false;
+
+        if (!isLangSwitch) {
+            updateProgress('progressFillGame2', (g2CurrentIndex / g2QuestionOrder.length) * 100);
+        }
+
+        setTimeout(() => speakText(q.text), isLangSwitch ? 100 : 300);
+    }
+
+    function loadNextQuestionG2() {
+        renderCurrentQuestionG2(false);
+    }
+
+    document.getElementById('playQuizBtn').onclick = () => {
+        unlockAudio();
+        const dataIdx = g2QuestionOrder[g2CurrentIndex];
+        if (dataIdx === undefined) return;
+        speakText(g2Data[currentLang][dataIdx].text);
+    };
+
+    document.getElementById('btnMasa').onclick = function() {
+        handleAnswerG2('masa', this);
+    };
+    
+    document.getElementById('btnVolumen').onclick = function() {
+        handleAnswerG2('volumen', this);
+    };
+
+    function handleAnswerG2(userChoice, btnElement) {
+        const dataIdx = g2QuestionOrder[g2CurrentIndex];
+        const currentQ = g2Data[currentLang][dataIdx];
+        const isCorrect = userChoice === currentQ.type;
+        const otherBtnId = userChoice === 'masa' ? 'btnVolumen' : 'btnMasa';
+        const otherBtn = document.getElementById(otherBtnId);
+
+        safeCancelSpeech();
+        btnElement.disabled = true;
+        otherBtn.disabled = true;
+
+        if (isCorrect) {
+            reproducirSonidoCorrecto();
+            btnElement.classList.add('correct-ans');
+            if (!g2CurrentQuestionErred) totalCorrectG2++;
+
+            g2CurrentIndex++;
+            g2CurrentQuestionErred = false;
+
+            setTimeout(() => {
+                loadNextQuestionG2();
+            }, 1000);
+        } else {
+            reproducirSonidoError();
+            btnElement.classList.add('wrong-ans');
+            g2CurrentQuestionErred = true;
+
+            // No avanza: tras el feedback de error, se reactivan los botones para volver a elegir
+            setTimeout(() => {
+                btnElement.classList.remove('wrong-ans');
+                btnElement.disabled = false;
+                otherBtn.disabled = false;
+            }, 900);
+        }
+    }
+
+    /* --- FINALIZAR --- */
+    function finishGame() {
+        stopTimerForCheck();
+        finalTimeVal = elapsed;
+        
+        // Cálculo: (100 / total_preguntas) * aciertos
+        const totalHits = totalCorrectG1 + totalCorrectG2;
+        finalScoreVal = Math.round((100 / GRAND_TOTAL_QUESTIONS) * totalHits);
+
+        document.getElementById('finalScore').textContent = finalScoreVal;
+        document.getElementById('finalTime').textContent = formatTime(finalTimeVal);
+
+        const trophyBox = document.getElementById('trophyBox');
+        const msg = document.getElementById('finalMsg');
+        const t = i18n[currentLang];
+        
+        if (finalScoreVal === 100) {
+            trophyBox.style.display = 'block';
+            msg.textContent = t.msgPerfect;
+            reproducirSonidoVictoria();
+            createConfetti();
+        } else {
+            trophyBox.style.display = 'none';
+            msg.textContent = t.msgOther;
+            reproducirSonidoCompletado();
+        }
+
+        showScreen('finalScreen');
+        showSubmitModal(finalTimeVal, finalScoreVal);
+    }
+
+    /* --- EFECTOS VISUALES --- */
+    function createConfetti() {
+        for(let i=0;i<100;i++){
+            setTimeout(()=>{
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                const x = Math.random() * window.innerWidth;
+                const tx = (Math.random() - 0.5) * 200;
+                c.style.left = x + 'px';
+                c.style.top = '-10px';
+                c.style.backgroundColor = ['#ff595e','#1982c4','#6a4c93','#ffca3a','#8ac926'][Math.floor(Math.random()*5)];
+                c.style.setProperty('--tx', tx + 'px');
+                c.style.setProperty('--ty', window.innerHeight + 20 + 'px');
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 3000);
+            }, i * 20);
+        }
+    }
+
+    /* --- HALL OF FAME --- */
+    let isHofLoading = false;
+
+    function loadHallOfFame(isRetry) {
+        if (isHofLoading) return;
+        isHofLoading = true;
+
+        const tbody = document.getElementById('hofTableBody');
+        if (!isRetry) tbody.innerHTML = '<tr><td colspan="4" class="hall-of-fame-loading">Cargando datos...</td></tr>';
+
+        const url = `${APP_SCRIPT_URL}?action=read&sheet=${SHEET_NAME}`;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+        fetch(url, { signal: controller.signal })
+            .then(r => {
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                return r.json();
+            })
+            .then(data => {
+                clearTimeout(timeoutId);
+                isHofLoading = false;
+                if (data.status === 'success' && data.data) {
+                    const processedData = data.data.map(row => {
+                        const getVal = (keys) => {
+                            for(let key of keys) {
+                                if(row[key] !== undefined && row[key] !== "") return row[key];
+                            }
+                            return null;
+                        };
+                        return {
+                            Nombre: getVal(["Nombre", "nombre", "name"]),
+                            Apellidos: getVal(["Apellidos", "apellidos", "surname"]),
+                            Puntuación: getVal(["Puntuación", "puntuación", "score"]),
+                            Tiempo: getVal(["Tiempo (s)", "Tiempo", "tiempo", "time"])
+                        };
+                    });
+
+                    const validData = processedData.filter(row => row.Puntuación !== null && !isNaN(parseFloat(row.Puntuación)));
+
+                    if (validData.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" class="hall-of-fame-loading">¡Sé el primero en guardar tu puntuación!</td></tr>';
+                    } else {
+                        validData.sort((a, b) => {
+                            const scoreA = parseFloat(a.Puntuación) || 0;
+                            const scoreB = parseFloat(b.Puntuación) || 0;
+                            if (scoreB !== scoreA) return scoreB - scoreA;
+                            const timeA = parseFloat(a.Tiempo) || 9999;
+                            const timeB = parseFloat(b.Tiempo) || 9999;
+                            return timeA - timeB;
+                        });
+
+                        tbody.innerHTML = '';
+                        const top10 = validData.slice(0, 10);
+
+                        for (let i = 0; i < top10.length; i++) {
+                            const item = top10[i];
+                            const tr = document.createElement('tr');
+                            const displayName = `${item.Nombre || ''} ${item.Apellidos || ''}`.trim();
+                            let timeStr = item.Tiempo;
+                            if (!isNaN(parseFloat(item.Tiempo))) {
+                                timeStr = formatTime(parseFloat(item.Tiempo));
+                            }
+                            const points = item.Puntuación || 0;
+
+                            tr.innerHTML = `
+                                <td>${i + 1}º</td>
+                                <td>${displayName}</td>
+                                <td>${points}</td>
+                                <td>${timeStr}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        }
+                    }
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" class="hall-of-fame-loading">¡Sé el primero en guardar tu puntuación!</td></tr>';
+                }
+            })
+            .catch(e => {
+                clearTimeout(timeoutId);
+                isHofLoading = false;
+                if (!isRetry) {
+                    setTimeout(() => loadHallOfFame(true), 500);
+                } else {
+                    console.error("Error HoF:", e);
+                    tbody.innerHTML = '<tr><td colspan="4" class="hall-of-fame-error">Error de conexión.</td></tr>';
+                }
+            });
+    }
+
+    function showSubmitModal(time, score) {
+        document.getElementById('modalTime').textContent = formatTime(time);
+        document.getElementById('playerName').value = '';
+        document.getElementById('playerSurname').value = '';
+        document.getElementById('submitModal').style.display = 'flex';
+    }
+
+    document.getElementById('discardScoreBtn').onclick = () => { 
+        reproducirSonidoTap();
+        document.getElementById('submitModal').style.display = 'none'; 
+    };
+
+    document.getElementById('submitScoreBtn').onclick = () => {
+        const btn = document.getElementById('submitScoreBtn');
+        const nameInput = document.getElementById('playerName');
+        const surnameInput = document.getElementById('playerSurname');
+        
+        const payload = {
+            score: finalScoreVal,
+            time: finalTimeVal, 
+            name: nameInput.value.trim(),
+            surname: surnameInput.value.trim()
+        };
+
+        if(payload.name && payload.surname) {
+            reproducirSonidoTap();
+            const originalText = btn.textContent;
+            btn.textContent = "...";
+            btn.disabled = true;
+
+            fetch(APP_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ sheet: SHEET_NAME, action: 'write', data: payload })
+            })
+            .then(() => {
+                document.getElementById('submitModal').style.display = 'none';
+                btn.textContent = originalText;
+                btn.disabled = false;
+                setTimeout(loadHallOfFame, 1500);
+            })
+            .catch(e => {
+                console.error("Error envío:", e);
+                btn.textContent = originalText;
+                btn.disabled = false;
+            });
+        } else {
+            alert(i18n[currentLang].validationMsg);
+        }
+    };
+
+    // Enter key en modal
+    document.getElementById('playerSurname').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            document.getElementById('submitScoreBtn').click();
+        }
+    });
+
+    /* --- EVENTOS --- */
+    document.getElementById('playBtn').onclick = () => { 
+        unlockAudio();
+        forceInitTTS();
+        reproducirSonidoTap(); 
+        showScreen('summaryScreen'); 
+    };
+    document.getElementById('startGameBtn').onclick = () => { 
+        reproducirSonidoTap(); 
+        initGameSequence(); 
+    };
+    
+    document.getElementById('backToMenuBtn').onclick = () => { 
+        reproducirSonidoTap(); 
+        location.reload(); 
+    };
+    document.getElementById('muteBtn').onclick = toggleSound;
+
+    /* --- INIT --- */
+    document.addEventListener('DOMContentLoaded', () => { loadHallOfFame(); });
+
+</script>
+</body>
+</html>
